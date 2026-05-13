@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper:    #F4F0E8;
+  --paperAlt: #FBF9F4;
+  --ink:      #161513;
+  --inkSoft:  #56524A;
+  --inkMute:  #8A8478;
+  --rule:     #D9D2C2;
+  --ruleSoft: #E8E2D4;
+  --amber:    #E89A2D;
+  --amberBg:  #FBE9C7;
+  --red:      #C8312D;
+  --redBg:    #F5D9D6;
+  --teal:     #1F5F5B;
+  --tealBg:   #D5E5E0;
+  --blue:     #2E5C9E;
+  --font-sans: 'Geist', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #app {
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Scrollbar fine --- */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+/* --- Animations --- */
+@keyframes tracePulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.95; }
+}
+
+@keyframes tracePulseDot {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.4; }
+}
+
+@keyframes traceCursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes traceSpin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-trace-pulse    { animation: tracePulse 1.6s ease-in-out infinite; }
+.animate-trace-dot      { animation: tracePulseDot 1.2s ease-in-out infinite; }
+.animate-trace-cursor   { animation: traceCursor 1s steps(2) infinite; }
+.animate-trace-spin     { animation: traceSpin 6s linear infinite; }

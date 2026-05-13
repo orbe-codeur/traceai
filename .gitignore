@@ -1,0 +1,28 @@
+# Données et fichiers générés
+backend/uploads/
+backend/traceai.db
+backend/*.db
+
+# Environnements Python
+backend/venv/
+backend/.venv/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Dépendances Node
+node_modules/
+frontend/node_modules/
+
+# Build
+dist/
+frontend/dist/
+
+# Variables d'environnement (contient des clés API)
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
