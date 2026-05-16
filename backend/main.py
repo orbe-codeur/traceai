@@ -1,14 +1,17 @@
 import asyncio
+import hashlib
 import os
 import json
+import shutil
 import sqlite3
+import zipfile as _zipfile
 from datetime import datetime
 from pathlib import Path
 
 import fitz  # PyMuPDF
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel
@@ -29,8 +32,11 @@ LLM_API_URL = (
     else "https://api.mistral.ai/v1/chat/completions"
 )
 
-UPLOADS_DIR = Path(__file__).parent / "uploads"
+UPLOADS_DIR   = Path(__file__).parent / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
+PHASE2_DIR    = Path(__file__).parent / "uploads_phase2"
+PHASE2_DIR.mkdir(exist_ok=True)
+CHROMA_DIR    = Path(__file__).parent / "chroma_data"
 
 DB_PATH = Path(__file__).parent / "traceai.db"
 
@@ -145,6 +151,97 @@ def init_db():
             note             TEXT,
             validated_at     TEXT
         );
+
+        -- Phase 2 tables --
+
+        CREATE TABLE IF NOT EXISTS documents (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id    INTEGER REFERENCES projects(id),
+            filename      TEXT NOT NULL,
+            file_type     TEXT NOT NULL,
+            file_path     TEXT,
+            source_url    TEXT,
+            file_hash     TEXT,
+            page_count    INTEGER,
+            is_scanned    INTEGER DEFAULT 0,
+            status        TEXT DEFAULT 'pending',
+            error_message TEXT,
+            metadata_json TEXT,
+            machine_ref   TEXT,
+            doc_type      TEXT,
+            created_at    TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS chunks (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            document_id   INTEGER REFERENCES documents(id),
+            project_id    INTEGER REFERENCES projects(id),
+            chunk_index   INTEGER,
+            content       TEXT NOT NULL,
+            summary       TEXT,
+            category      TEXT,
+            page_ref      INTEGER,
+            section_ref   TEXT,
+            machine_ref   TEXT,
+            keywords_json TEXT,
+            embedding_id  TEXT,
+            created_at    TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS wiki_pages (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id        INTEGER REFERENCES projects(id),
+            page_type         TEXT NOT NULL,
+            page_name         TEXT NOT NULL,
+            title             TEXT NOT NULL,
+            content_md        TEXT NOT NULL,
+            sources_json      TEXT,
+            contradictions_json TEXT,
+            gaps_json         TEXT,
+            last_compiled_at  TEXT,
+            created_at        TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS batch_jobs (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id      INTEGER REFERENCES projects(id),
+            total_files     INTEGER,
+            processed_files INTEGER DEFAULT 0,
+            error_files     INTEGER DEFAULT 0,
+            status          TEXT DEFAULT 'running',
+            agents_json     TEXT DEFAULT '{}',
+            logs_json       TEXT DEFAULT '[]',
+            started_at      TEXT DEFAULT (datetime('now')),
+            completed_at    TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS conversations (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER REFERENCES projects(id),
+            title      TEXT,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS messages (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id INTEGER REFERENCES conversations(id),
+            role            TEXT NOT NULL,
+            content         TEXT NOT NULL,
+            sources_json    TEXT,
+            confidence      REAL,
+            created_at      TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS alerts (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id   INTEGER REFERENCES projects(id),
+            machine_ref  TEXT,
+            alert_type   TEXT,
+            message      TEXT NOT NULL,
+            severity     TEXT DEFAULT 'info',
+            is_dismissed INTEGER DEFAULT 0,
+            created_at   TEXT DEFAULT (datetime('now'))
+        );
     """)
     conn.commit()
     conn.close()
@@ -167,6 +264,14 @@ app.add_middleware(
 @app.on_event("startup")
 def startup():
     init_db()
+    # Migration : ajouter logs_json si absent (DB existante)
+    conn = get_db()
+    try:
+        conn.execute("ALTER TABLE batch_jobs ADD COLUMN logs_json TEXT DEFAULT '[]'")
+        conn.commit()
+    except Exception:
+        pass  # colonne déjà existante
+    conn.close()
 
 
 # ---------------------------------------------------------------------------
@@ -684,3 +789,385 @@ def get_pdf_page(project_id: int, page: int):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur rendu PDF : {e}")
+
+
+# ===========================================================================
+# Phase 2 — Pipeline background + endpoints
+# ===========================================================================
+
+import logging
+_log = logging.getLogger("traceai.phase2")
+
+
+def _run_pipeline(project_id: int, job_id: int, urls: list[str]):
+    """
+    Pipeline synchrone (exécuté dans un thread par FastAPI BackgroundTasks).
+    Enchaîne les 10 agents et met à jour batch_jobs en continu.
+    """
+    from agents import arborescence, tri, parser, chunker
+    from agents import enrichisseur, indexeur, compilateur, qualite
+    from agents import repondeur, alertes
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+
+    try:
+        proj_dir = PHASE2_DIR / str(project_id)
+        file_paths = list(proj_dir.glob("**/*"))
+        file_paths = [p for p in file_paths if p.is_file()]
+
+        _log.info(f"[pipeline] projet {project_id} — {len(file_paths)} fichiers")
+
+        # Agent 1
+        machines = arborescence.run(project_id, job_id, file_paths, conn)
+
+        # Agent 2
+        unique_files = tri.run(project_id, job_id, file_paths, conn)
+
+        # Agent 3
+        parsed_docs = parser.run(project_id, job_id, unique_files, conn, urls=urls)
+
+        # Agent 4
+        chunks = chunker.run(project_id, job_id, parsed_docs, conn)
+
+        # Agent 5
+        enrichisseur.run(project_id, job_id, chunks, conn)
+
+        # Agent 6 — passe les chunks originaux (enrichis en base)
+        indexeur.run(project_id, job_id, chunks, conn, chroma_dir=CHROMA_DIR)
+
+        # Agent 7 — passe les chunks originaux (machine_ref mis à jour par enrichisseur)
+        wiki_pages = compilateur.run(project_id, job_id, chunks, conn)
+
+        # Agent 8
+        qualite.run(project_id, job_id, wiki_pages, conn)
+
+        # Agent 9
+        repondeur.init(project_id, job_id, conn)
+
+        # Agent 10
+        alertes.run(project_id, job_id, wiki_pages, conn)
+
+        conn.execute(
+            "UPDATE batch_jobs SET status='done', completed_at=datetime('now') WHERE id=?",
+            (job_id,),
+        )
+        conn.commit()
+        _log.info(f"[pipeline] projet {project_id} — terminé")
+
+    except Exception as e:
+        _log.error(f"[pipeline] Erreur projet {project_id}: {e}", exc_info=True)
+        conn.execute(
+            "UPDATE batch_jobs SET status='error', completed_at=datetime('now') WHERE id=?",
+            (job_id,),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Ingest
+# ---------------------------------------------------------------------------
+
+@app.post("/api/projects/{project_id}/ingest")
+async def ingest_documents(
+    project_id: int,
+    background_tasks: BackgroundTasks,
+    files: list[UploadFile] = File(default=[]),
+    urls: str = Form(default=""),  # JSON array ou lignes séparées
+):
+    """Reçoit des fichiers/ZIP/URLs, crée un batch_job et lance le pipeline."""
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+
+    # ── Nettoyage complet avant chaque nouveau batch ──────────────────────────
+    # Supprimer les anciens fichiers du dossier projet
+    proj_dir = PHASE2_DIR / str(project_id)
+    if proj_dir.exists():
+        shutil.rmtree(proj_dir)
+    proj_dir.mkdir(parents=True, exist_ok=True)
+
+    # Supprimer les anciennes données de ce projet en base
+    conn.execute("DELETE FROM chunks     WHERE project_id=?", (project_id,))
+    conn.execute("DELETE FROM documents  WHERE project_id=?", (project_id,))
+    conn.execute("DELETE FROM wiki_pages WHERE project_id=?", (project_id,))
+    conn.execute("DELETE FROM alerts     WHERE project_id=?", (project_id,))
+    conn.commit()
+    # ─────────────────────────────────────────────────────────────────────────
+
+    # Sauvegarder et extraire les fichiers uploadés
+    MAX_FILE = 500 * 1024 * 1024  # 500 Mo
+
+    for upload in files:
+        content = await upload.read(MAX_FILE + 1)
+        if len(content) > MAX_FILE:
+            continue
+        safe_name = Path(upload.filename or "file").name[:255]
+        dest = proj_dir / safe_name
+        dest.write_bytes(content)
+
+        if dest.suffix.lower() == ".zip":
+            try:
+                with _zipfile.ZipFile(dest) as zf:
+                    zf.extractall(proj_dir)
+                dest.unlink()
+            except Exception:
+                pass  # garder le zip si extraction échoue
+
+    # Parser les URLs
+    url_list: list[str] = []
+    if urls.strip():
+        try:
+            url_list = json.loads(urls)
+        except Exception:
+            url_list = [u.strip() for u in urls.splitlines() if u.strip()]
+
+    # Lister exactement les fichiers uploadés maintenant
+    all_files = [p for p in proj_dir.rglob("*") if p.is_file()]
+    total = len(all_files) + len(url_list)
+
+    # Insérer les documents en base
+    for p in all_files:
+        file_type = p.suffix.lstrip(".").lower() or "unknown"
+        conn.execute(
+            """INSERT INTO documents
+               (project_id, filename, file_type, file_path, status)
+               VALUES (?, ?, ?, ?, 'pending')""",
+            (project_id, p.name, file_type, str(p)),
+        )
+    conn.commit()
+
+    # Créer le batch_job
+    cursor = conn.execute(
+        "INSERT INTO batch_jobs (project_id, total_files, status, agents_json, logs_json) VALUES (?, ?, 'running', '{}', '[]')",
+        (project_id, total),
+    )
+    job_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+
+    # Lancer le pipeline en background
+    background_tasks.add_task(_run_pipeline, project_id, job_id, url_list)
+
+    return {"job_id": job_id, "total_files": total, "status": "running"}
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Job status
+# ---------------------------------------------------------------------------
+
+@app.patch("/api/jobs/{job_id}/cancel")
+def cancel_job(job_id: int):
+    """Annule un batch en cours — le pipeline s'arrête à la prochaine vérification."""
+    conn = get_db()
+    row = conn.execute("SELECT status FROM batch_jobs WHERE id=?", (job_id,)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Job introuvable.")
+    if row[0] not in ("running",):
+        conn.close()
+        raise HTTPException(status_code=400, detail=f"Job déjà {row[0]}.")
+    conn.execute(
+        "UPDATE batch_jobs SET status='cancelled', completed_at=datetime('now') WHERE id=?",
+        (job_id,),
+    )
+    conn.commit()
+    conn.close()
+    return {"ok": True, "job_id": job_id}
+
+
+@app.get("/api/jobs/{job_id}/status")
+def get_job_status(job_id: int):
+    """Retourne l'état du batch + compteurs par agent + logs temps réel."""
+    conn = get_db()
+    row = conn.execute("SELECT * FROM batch_jobs WHERE id=?", (job_id,)).fetchone()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="Job introuvable.")
+    d = row_to_dict(row)
+    d["agents"] = json.loads(d.get("agents_json") or "{}")
+    d["logs"]   = json.loads(d.get("logs_json")   or "[]")
+    return d
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Documents
+# ---------------------------------------------------------------------------
+
+@app.get("/api/projects/{project_id}/documents")
+def list_documents(project_id: int):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM documents WHERE project_id=? ORDER BY created_at DESC",
+        (project_id,),
+    ).fetchall()
+    conn.close()
+    return [row_to_dict(r) for r in rows]
+
+
+@app.delete("/api/documents/{doc_id}")
+def delete_document(doc_id: int):
+    conn = get_db()
+    row = conn.execute("SELECT file_path FROM documents WHERE id=?", (doc_id,)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Document introuvable.")
+    conn.execute("DELETE FROM chunks WHERE document_id=?", (doc_id,))
+    conn.execute("DELETE FROM documents WHERE id=?", (doc_id,))
+    conn.commit()
+    conn.close()
+    if row[0]:
+        p = Path(row[0])
+        if p.exists():
+            p.unlink()
+    return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Wiki
+# ---------------------------------------------------------------------------
+
+@app.get("/api/projects/{project_id}/wiki")
+def get_wiki_index(project_id: int):
+    """Retourne l'index du wiki + liste des pages."""
+    conn = get_db()
+    pages = conn.execute(
+        "SELECT id, page_type, page_name, title, last_compiled_at FROM wiki_pages WHERE project_id=? ORDER BY page_type, page_name",
+        (project_id,),
+    ).fetchall()
+    conn.close()
+    return [row_to_dict(p) for p in pages]
+
+
+@app.get("/api/wiki/{wiki_id}")
+def get_wiki_page(wiki_id: int):
+    """Retourne le contenu complet d'une page wiki."""
+    conn = get_db()
+    row = conn.execute("SELECT * FROM wiki_pages WHERE id=?", (wiki_id,)).fetchone()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="Page wiki introuvable.")
+    d = row_to_dict(row)
+    d["contradictions"] = json.loads(d.get("contradictions_json") or "[]")
+    d["gaps"] = json.loads(d.get("gaps_json") or "[]")
+    return d
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Chat wiki (RAG hybride)
+# ---------------------------------------------------------------------------
+
+class WikiChatBody(BaseModel):
+    message: str
+    conversation_id: int | None = None
+
+
+@app.post("/api/projects/{project_id}/wiki-chat")
+def wiki_chat(project_id: int, body: WikiChatBody):
+    """Répond en utilisant le wiki (RAG hybride wiki + chroma)."""
+    from agents import repondeur
+
+    conn = get_db()
+
+    # Gérer la conversation
+    conv_id = body.conversation_id
+    if not conv_id:
+        cursor = conn.execute(
+            "INSERT INTO conversations (project_id, title) VALUES (?, ?)",
+            (project_id, body.message[:80]),
+        )
+        conv_id = cursor.lastrowid
+        conn.commit()
+
+    # Sauvegarder le message utilisateur
+    conn.execute(
+        "INSERT INTO messages (conversation_id, role, content) VALUES (?, 'user', ?)",
+        (conv_id, body.message),
+    )
+    conn.commit()
+
+    # Répondre
+    chroma = CHROMA_DIR if CHROMA_DIR.exists() else None
+    result = repondeur.answer(project_id, body.message, conn, chroma_dir=chroma)
+
+    # Sauvegarder la réponse
+    conn.execute(
+        """INSERT INTO messages (conversation_id, role, content, sources_json, confidence)
+           VALUES (?, 'assistant', ?, ?, ?)""",
+        (
+            conv_id,
+            result["answer"],
+            json.dumps(result["sources"], ensure_ascii=False),
+            result["confidence"],
+        ),
+    )
+    conn.commit()
+    conn.close()
+
+    return {
+        "answer": result["answer"],
+        "sources": result["sources"],
+        "confidence": result["confidence"],
+        "conversation_id": conv_id,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Conversations
+# ---------------------------------------------------------------------------
+
+@app.get("/api/projects/{project_id}/conversations")
+def list_conversations(project_id: int):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM conversations WHERE project_id=? ORDER BY created_at DESC",
+        (project_id,),
+    ).fetchall()
+    conn.close()
+    return [row_to_dict(r) for r in rows]
+
+
+@app.get("/api/conversations/{conv_id}/messages")
+def get_messages(conv_id: int):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM messages WHERE conversation_id=? ORDER BY created_at ASC",
+        (conv_id,),
+    ).fetchall()
+    conn.close()
+    result = []
+    for r in rows:
+        d = row_to_dict(r)
+        d["sources"] = json.loads(d.get("sources_json") or "[]")
+        result.append(d)
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Alertes
+# ---------------------------------------------------------------------------
+
+@app.get("/api/projects/{project_id}/alerts")
+def get_alerts(project_id: int):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM alerts WHERE project_id=? AND is_dismissed=0 ORDER BY created_at DESC",
+        (project_id,),
+    ).fetchall()
+    conn.close()
+    return [row_to_dict(r) for r in rows]
+
+
+@app.patch("/api/alerts/{alert_id}/dismiss")
+def dismiss_alert(alert_id: int):
+    conn = get_db()
+    if not conn.execute("SELECT id FROM alerts WHERE id=?", (alert_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Alerte introuvable.")
+    conn.execute("UPDATE alerts SET is_dismissed=1 WHERE id=?", (alert_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}

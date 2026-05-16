@@ -111,9 +111,13 @@ function fmtTime(iso) {
             <h1 class="ov-title">{{ project?.name }}</h1>
             <p class="ov-ref">{{ project?.pdf_filename }}</p>
           </div>
-          <div style="display:flex;gap:8px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn-resume" @click="router.push(`/project/${projectId}`)">
               Reprendre l'installation →
+            </button>
+            <button class="btn-resume" style="background:transparent;color:var(--ink);border:1px solid var(--rule)"
+              @click="router.push(`/project/${projectId}/wiki-admin`)">
+              📚 Machine Wiki
             </button>
             <button class="btn-delete" @click="deleteProject">Supprimer</button>
           </div>

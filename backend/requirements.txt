@@ -4,3 +4,19 @@ python-multipart
 pymupdf
 httpx
 python-dotenv
+
+# Phase 2 — Pipeline agents
+python-docx
+openpyxl
+beautifulsoup4
+
+# Phase 2 — Vectorisation (optionnel, lourd ~2 Go)
+# chromadb
+# sentence-transformers
+
+# Phase 2 — OCR (optionnel, très lourd)
+# surya-ocr
+
+# Phase 2 — Évaluation (optionnel)
+# ragas
+# datasets

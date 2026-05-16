@@ -1,5 +1,7 @@
 # Données et fichiers générés
 backend/uploads/
+backend/uploads_phase2/
+backend/chroma_data/
 backend/traceai.db
 backend/*.db
 
