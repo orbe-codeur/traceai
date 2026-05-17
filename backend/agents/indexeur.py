@@ -7,7 +7,7 @@ import logging
 import sqlite3
 from pathlib import Path
 
-from .utils import update_agent
+from .utils import update_agent, embed_texts
 
 logger = logging.getLogger(__name__)
 
@@ -26,19 +26,6 @@ def _get_chroma_collection(chroma_dir: Path, project_id: int):
         return None
 
 
-def _get_embedding_model():
-    """Charge BGE-M3, retourne None si non disponible."""
-    try:
-        from sentence_transformers import SentenceTransformer
-        return SentenceTransformer("BAAI/bge-m3")
-    except ImportError:
-        logger.warning("[indexeur] sentence-transformers non installé — embeddings ignorés")
-        return None
-    except Exception as e:
-        logger.warning(f"[indexeur] Modèle embedding échoué: {e}")
-        return None
-
-
 def run(
     project_id: int,
     job_id: int,
@@ -47,7 +34,7 @@ def run(
     chroma_dir: Path | None = None,
 ) -> bool:
     """
-    Indexe les chunks dans ChromaDB avec embeddings BGE-M3.
+    Indexe les chunks dans ChromaDB avec embeddings Mistral.
     Retourne True si l'indexation a eu lieu, False si dégradée.
     """
     update_agent(conn, job_id, "index", "running", "")
@@ -58,10 +45,7 @@ def run(
         return False
 
     collection = _get_chroma_collection(chroma_dir, project_id)
-    model = _get_embedding_model()
-
-    if not collection or not model:
-        # Mode dégradé : pas d'embeddings, la recherche se fera en texte seul
+    if not collection:
         update_agent(conn, job_id, "index", "done", f"{len(chunks)} chunks (texte seul)")
         return False
 
@@ -84,14 +68,13 @@ def run(
         ]
 
         try:
-            embeddings = model.encode(texts, show_progress_bar=False).tolist()
+            embeddings = embed_texts(texts)
             collection.add(
                 embeddings=embeddings,
                 documents=texts,
                 metadatas=metadatas,
                 ids=ids,
             )
-            # Stocker l'embedding_id
             for chunk in batch:
                 conn.execute(
                     "UPDATE chunks SET embedding_id=? WHERE id=?",
@@ -102,7 +85,7 @@ def run(
         except Exception as e:
             logger.error(f"[indexeur] Batch {i}: {e}")
 
-    counter = f"{indexed} embeddings BGE-M3 → ChromaDB"
+    counter = f"{indexed} embeddings Mistral → ChromaDB"
     update_agent(conn, job_id, "index", "done", counter)
     logger.info(f"[indexeur] {counter}")
     return True

@@ -830,13 +830,13 @@ def _run_pipeline(project_id: int, job_id: int, urls: list[str]):
         # Agent 4
         chunks = chunker.run(project_id, job_id, parsed_docs, conn)
 
-        # Agent 5
-        enrichisseur.run(project_id, job_id, chunks, conn)
+        # Agent 5 — désactivé (trop lent, 1 appel LLM/chunk)
+        # enrichisseur.run(project_id, job_id, chunks, conn)
 
-        # Agent 6 — passe les chunks originaux (enrichis en base)
+        # Agent 6
         indexeur.run(project_id, job_id, chunks, conn, chroma_dir=CHROMA_DIR)
 
-        # Agent 7 — passe les chunks originaux (machine_ref mis à jour par enrichisseur)
+        # Agent 7
         wiki_pages = compilateur.run(project_id, job_id, chunks, conn)
 
         # Agent 8

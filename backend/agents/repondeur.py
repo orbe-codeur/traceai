@@ -7,7 +7,7 @@ import json
 import logging
 import sqlite3
 
-from .utils import llm_json, update_agent
+from .utils import llm_json, update_agent, embed_texts
 
 logger = logging.getLogger(__name__)
 
@@ -129,12 +129,10 @@ def _search_chroma(project_id: int, query: str, chroma_dir, limit: int = 5) -> l
         return []
     try:
         import chromadb
-        from sentence_transformers import SentenceTransformer
 
         client = chromadb.PersistentClient(path=str(chroma_dir))
         collection = client.get_collection(f"project_{project_id}")
-        model = SentenceTransformer("BAAI/bge-m3")
-        embedding = model.encode(query).tolist()
+        embedding = embed_texts([query])[0]
 
         results = collection.query(
             query_embeddings=[embedding],

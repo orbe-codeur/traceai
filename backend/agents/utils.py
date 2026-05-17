@@ -72,6 +72,27 @@ def llm_json(messages: list[dict], timeout: float = 120.0, model_override: str |
             return _parse_json(content)
 
 
+_EMBED_URL = "https://api.mistral.ai/v1/embeddings"
+_EMBED_MODEL = os.getenv("EMBEDDING_MODEL", "mistral-embed")
+_EMBED_BATCH = 32
+
+
+def embed_texts(texts: list[str]) -> list[list[float]]:
+    """Génère des embeddings via Mistral API par lots de _EMBED_BATCH."""
+    results: list[list[float]] = []
+    for i in range(0, len(texts), _EMBED_BATCH):
+        batch = texts[i : i + _EMBED_BATCH]
+        with httpx.Client(timeout=60.0) as client:
+            resp = client.post(
+                _EMBED_URL,
+                headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+                json={"model": _EMBED_MODEL, "input": batch},
+            )
+            resp.raise_for_status()
+            results.extend(d["embedding"] for d in resp.json()["data"])
+    return results
+
+
 def update_agent(
     conn: sqlite3.Connection,
     job_id: int,

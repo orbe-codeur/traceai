@@ -143,8 +143,9 @@ def run(
                 cursor = conn.execute(
                     """INSERT INTO chunks
                        (document_id, project_id, chunk_index, content,
-                        page_ref, section_ref)
-                       VALUES (?, ?, ?, ?, ?, ?)""",
+                        page_ref, section_ref, machine_ref)
+                       VALUES (?, ?, ?, ?, ?, ?,
+                           (SELECT machine_ref FROM documents WHERE id=?))""",
                     (
                         doc_id,
                         project_id,
@@ -152,6 +153,7 @@ def run(
                         chunk["content"],
                         chunk.get("page_ref"),
                         chunk.get("title", "")[:255],
+                        doc_id,
                     ),
                 )
                 all_chunks.append({
