@@ -51,29 +51,19 @@ def _parse_json(content: str) -> dict:
     return json.loads(content)  # lève JSONDecodeError si vraiment invalide
 
 
-def llm_json(messages: list[dict], timeout: float = 120.0) -> dict:
+def llm_json(messages: list[dict], timeout: float = 120.0, model_override: str | None = None) -> dict:
     """Appel LLM synchrone, retourne un dict JSON. Supporte Ollama et cloud."""
+    model = model_override or LLM_MODEL
     with _SEM:
         if _CALL_DELAY > 0:
             time.sleep(_CALL_DELAY)
 
-        # Headers : Ollama ignore l'auth, cloud en a besoin
         headers = {"Authorization": f"Bearer {LLM_API_KEY}"}
 
-        # Payload : Ollama utilise "format":"json", cloud utilise response_format
         if LLM_PROVIDER == "ollama":
-            payload = {
-                "model":    LLM_MODEL,
-                "messages": messages,
-                "format":   "json",    # force JSON nativement dans Ollama
-                "stream":   False,
-            }
+            payload = {"model": model, "messages": messages, "format": "json", "stream": False}
         else:
-            payload = {
-                "model":           LLM_MODEL,
-                "messages":        messages,
-                "response_format": {"type": "json_object"},
-            }
+            payload = {"model": model, "messages": messages, "response_format": {"type": "json_object"}}
 
         with httpx.Client(timeout=timeout) as client:
             resp = client.post(LLM_API_URL, headers=headers, json=payload)

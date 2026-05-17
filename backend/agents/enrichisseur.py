@@ -9,6 +9,7 @@ import sqlite3
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import os
 from .utils import llm_json, update_agent, append_log, job_should_stop
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ Retourne UNIQUEMENT ce JSON :
 """
     for attempt in range(4):
         try:
-            result = llm_json([{"role": "user", "content": prompt}])
+            result = llm_json([{"role": "user", "content": prompt}], model_override=os.getenv("LLM_MODEL_FAST", "mistral-small-latest"))
             return {
                 "chunk_id": chunk["id"],
                 "keywords": result.get("keywords", []),

@@ -1,0 +1,22 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pymupdf
+httpx
+python-dotenv
+
+# Phase 2 — Pipeline agents
+python-docx
+openpyxl
+beautifulsoup4
+
+# Phase 2 — Vectorisation (~2 Go, nécessaire pour ChromaDB + embeddings BGE-M3)
+chromadb
+sentence-transformers
+
+# Phase 2 — OCR PDF scanné (très lourd, optionnel)
+# surya-ocr
+
+# Phase 2 — Évaluation RAGAS (optionnel)
+# ragas
+# datasets

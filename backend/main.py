@@ -256,7 +256,7 @@ app = FastAPI(title="TraceAI API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:5174"],
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["GET", "POST", "DELETE", "PATCH"],
     allow_headers=["Content-Type", "Authorization"],
 )
 
