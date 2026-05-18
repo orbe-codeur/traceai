@@ -237,10 +237,32 @@ def init_db():
             project_id   INTEGER REFERENCES projects(id),
             machine_ref  TEXT,
             alert_type   TEXT,
+            title        TEXT,
+            description  TEXT,
             message      TEXT NOT NULL,
             severity     TEXT DEFAULT 'info',
             is_dismissed INTEGER DEFAULT 0,
             created_at   TEXT DEFAULT (datetime('now'))
+        );
+
+        -- Phase B — Mémoire agent (projet) + sessions
+        CREATE TABLE IF NOT EXISTS project_memory (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+            key        TEXT NOT NULL,
+            value      TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_project_memory_key
+            ON project_memory(project_id, key);
+
+        CREATE TABLE IF NOT EXISTS agent_sessions (
+            id         TEXT PRIMARY KEY,
+            project_id INTEGER NOT NULL,
+            mode       TEXT NOT NULL,
+            system_prompt TEXT,
+            created_at TEXT DEFAULT (datetime('now'))
         );
     """)
     conn.commit()
@@ -264,13 +286,46 @@ app.add_middleware(
 @app.on_event("startup")
 def startup():
     init_db()
-    # Migration : ajouter logs_json si absent (DB existante)
+    # Migrations colonnes manquantes (DB existante)
     conn = get_db()
+    for migration in [
+        "ALTER TABLE batch_jobs ADD COLUMN logs_json TEXT DEFAULT '[]'",
+        "ALTER TABLE alerts ADD COLUMN title TEXT",
+        "ALTER TABLE alerts ADD COLUMN description TEXT",
+    ]:
+        try:
+            conn.execute(migration)
+            conn.commit()
+        except Exception:
+            pass  # colonne déjà existante
+
+    # Phase B — FTS5 mémoire (CREATE VIRTUAL TABLE ne supporte pas IF NOT EXISTS sur SQLite < 3.35)
     try:
-        conn.execute("ALTER TABLE batch_jobs ADD COLUMN logs_json TEXT DEFAULT '[]'")
+        conn.executescript("""
+            CREATE VIRTUAL TABLE IF NOT EXISTS project_memory_fts
+            USING fts5(key, value, content=project_memory, content_rowid=id);
+
+            CREATE TRIGGER IF NOT EXISTS memory_fts_insert
+                AFTER INSERT ON project_memory BEGIN
+                    INSERT INTO project_memory_fts(rowid, key, value)
+                    VALUES (new.id, new.key, new.value);
+                END;
+
+            CREATE TRIGGER IF NOT EXISTS memory_fts_update
+                AFTER UPDATE ON project_memory BEGIN
+                    DELETE FROM project_memory_fts WHERE rowid = old.id;
+                    INSERT INTO project_memory_fts(rowid, key, value)
+                    VALUES (new.id, new.key, new.value);
+                END;
+
+            CREATE TRIGGER IF NOT EXISTS memory_fts_delete
+                AFTER DELETE ON project_memory BEGIN
+                    DELETE FROM project_memory_fts WHERE rowid = old.id;
+                END;
+        """)
         conn.commit()
     except Exception:
-        pass  # colonne déjà existante
+        pass  # FTS5 déjà configuré ou non disponible
     conn.close()
 
 
@@ -1171,3 +1226,181 @@ def dismiss_alert(alert_id: int):
     conn.commit()
     conn.close()
     return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# Phase B — Agent autonome (Hermes-inspired)
+# ---------------------------------------------------------------------------
+
+class AgentChatBody(BaseModel):
+    message: str
+    mode: str = "chat"
+    history: list = []
+    session_id: str | None = None
+
+
+@app.post("/api/projects/{project_id}/agent-chat")
+def agent_chat(project_id: int, body: AgentChatBody):
+    """
+    Chat via l'agent autonome TraceAI (Phase B).
+    Distinct de /wiki-chat qui reste sur le pipeline RAG legacy.
+    mode : "chat" (défaut) | "alerte"
+    """
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+    conn.close()
+
+    from agent_core import TraceAIAgent
+    agent = TraceAIAgent(project_id, DB_PATH)
+    result = agent.process(
+        task=body.message,
+        mode=body.mode if body.mode in ("chat", "alerte") else "chat",
+        history=body.history or [],
+        session_id=body.session_id,
+    )
+    return {
+        "answer": result["answer"],
+        "iterations": result["iterations"],
+        "mode": result["mode"],
+    }
+
+
+@app.get("/api/projects/{project_id}/memory")
+def get_project_memory(project_id: int):
+    """Liste la mémoire persistante du projet (pour debug/UI)."""
+    from memory_engine import list_memory
+    conn = get_db()
+    entries = list_memory(project_id, conn)
+    conn.close()
+    return entries
+
+
+@app.get("/api/projects/{project_id}/skills")
+def get_project_skills(project_id: int):
+    """Liste les skills disponibles pour ce projet."""
+    from skills_engine import list_skills
+    return list_skills(project_id)
+
+
+@app.get("/api/projects/{project_id}/wiki-lint")
+def wiki_lint(project_id: int):
+    """Rapport d'intégrité du Machine Wiki (checks LLM complets)."""
+    from wiki_engine import lint_wiki
+    return lint_wiki(project_id)
+
+
+@app.get("/api/projects/{project_id}/wiki-health")
+def wiki_health(project_id: int):
+    """Health check structurel — zéro LLM, rapide. À lancer à chaque session."""
+    from wiki_engine import health_check
+    return health_check(project_id)
+
+
+@app.get("/api/projects/{project_id}/wiki-overview")
+def wiki_overview(project_id: int):
+    """Retourne la synthèse vivante overview.md."""
+    from wiki_engine import get_overview
+    return {"content": get_overview(project_id)}
+
+
+class WikiIngestBody(BaseModel):
+    filename: str
+    doc_type: str = "unknown"
+
+
+@app.post("/api/projects/{project_id}/wiki-ingest")
+def wiki_ingest(project_id: int, body: WikiIngestBody):
+    """
+    Ingestion LLM one-call d'un document dans le Machine Wiki.
+    Génère source_page + machine_pages + entity_pages + concept_pages en 1 appel Mistral.
+    """
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+    conn.close()
+
+    from pathlib import Path as _Path
+    from wiki_engine import ingest_document_llm
+
+    uploads = _Path(__file__).parent / "uploads"
+    phase2 = _Path(__file__).parent / "uploads_phase2"
+
+    filepath = phase2 / str(project_id) / body.filename
+    if not filepath.exists():
+        filepath = uploads / body.filename
+    if not filepath.exists():
+        filepath = uploads / f"{project_id}.pdf"
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail=f"Fichier introuvable : {body.filename}")
+
+    result = ingest_document_llm(project_id, filepath, body.doc_type)
+    return result
+
+
+class BuildGraphBody(BaseModel):
+    infer: bool = True
+
+
+@app.post("/api/projects/{project_id}/build-graph")
+def build_project_graph(project_id: int, body: BuildGraphBody):
+    """
+    Construit le knowledge graph du wiki (Pass 1 EXTRACTED + Pass 2 INFERRED).
+    Pass 2 utilise mistral-small — peut prendre quelques minutes.
+    """
+    from graph_engine import build_graph
+    graph = build_graph(project_id, infer=body.infer)
+    return {
+        "total_nodes": graph["meta"]["total_nodes"],
+        "total_edges": graph["meta"]["total_edges"],
+        "extracted_edges": graph["meta"]["extracted_edges"],
+        "inferred_edges": graph["meta"]["inferred_edges"],
+    }
+
+
+@app.get("/api/projects/{project_id}/graph")
+def get_graph(project_id: int):
+    """Retourne graph.json (nodes + edges)."""
+    from graph_engine import load_graph
+    graph = load_graph(project_id)
+    if not graph:
+        raise HTTPException(status_code=404, detail="Graphe non construit. Lancer POST /build-graph d'abord.")
+    return graph
+
+
+@app.get("/api/projects/{project_id}/graph.html")
+def get_graph_html(project_id: int):
+    """Sert la visualisation vis.js interactive du graphe."""
+    from graph_engine import _graph_dir, generate_graph_html, load_graph
+    from fastapi.responses import HTMLResponse
+    html_path = _graph_dir(project_id) / "graph.html"
+    if not html_path.exists():
+        graph = load_graph(project_id)
+        if not graph:
+            raise HTTPException(status_code=404, detail="Graphe non construit.")
+        generate_graph_html(project_id, graph)
+    return HTMLResponse(html_path.read_text(encoding="utf-8"))
+
+
+@app.post("/api/projects/{project_id}/wiki-heal")
+def wiki_heal(project_id: int):
+    """
+    Auto-génère les pages d'entités manquantes (mentionnées 3+ fois sans page propre).
+    Utilise mistral-small.
+    """
+    from graph_engine import heal_missing_entities, find_missing_entities
+    missing = find_missing_entities(project_id)
+    created = heal_missing_entities(project_id)
+    return {
+        "missing_found": len(missing),
+        "pages_created": created,
+    }
+
+
+@app.get("/api/projects/{project_id}/graph-lint")
+def graph_lint_report(project_id: int):
+    """Rapport lint graph-aware : hub stubs, nœuds isolés, low-degree."""
+    from graph_engine import graph_lint
+    return graph_lint(project_id)
