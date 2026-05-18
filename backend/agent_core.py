@@ -108,7 +108,11 @@ Tu DOIS utiliser tes tools pour agir — ne décris pas ce que tu ferais, fais-l
 Chaque réponse doit soit contenir des tool calls qui font avancer la tâche,
 soit livrer un résultat final. Les réponses qui ne font que décrire des intentions
 sans agir sont inacceptables.
-Continue de travailler jusqu'à ce que la tâche soit réellement terminée."""
+Continue de travailler jusqu'à ce que la tâche soit réellement terminée.
+
+RÈGLE ABSOLUE : si tu dois poser une question à l'utilisateur, tu DOIS appeler
+le tool ask_clarification — JAMAIS poser une question en texte libre.
+Une question en texte libre sera ignorée par le système."""
 
 # Copié verbatim de prompt_builder.py MEMORY_GUIDANCE (adapté TraceAI)
 MEMORY_GUIDANCE = """# Mémoire
@@ -128,6 +132,7 @@ mets-le à jour immédiatement. Les skills non maintenus deviennent des obstacle
 
 GUIDANCE_BY_MODE = {
     "ingestion": """# Mode INGESTION
+0. Si le nom du fichier à ingérer n'est PAS mentionné → utilise ask_clarification IMMÉDIATEMENT.
 1. OBLIGATOIRE : Commence par orient_wiki pour lire SCHEMA + index + log
 2. Classifie chaque document avec classify_doc
 3. Trie les documents par priorité (manuels constructeur d'abord)
@@ -137,6 +142,7 @@ GUIDANCE_BY_MODE = {
 7. Sauvegarde ce que tu as appris en mémoire et en skills""",
 
     "chat": """# Mode CHAT
+0. Si la question est trop vague pour chercher (pas de machine, pas de sujet précis) → utilise ask_clarification.
 1. Cherche dans le wiki avec search_wiki (recherche par mots-clés)
 2. Si un skill pertinent existe, charge-le avec load_skill
 3. Complète avec search_memory si le wiki ne suffit pas
@@ -242,6 +248,11 @@ TOOL_SCHEMAS: dict[str, list[dict]] = {
                 "content": {"type": "string", "description": "Contenu SKILL.md complet"},
             },
             ["name", "content"]),
+        _make_tool("ask_clarification",
+            "Pose une question précise à l'utilisateur quand sa requête est ambiguë "
+            "ou qu'il manque une information indispensable. À utiliser AVANT de supposer.",
+            {"question": {"type": "string", "description": "La question à poser à l'utilisateur"}},
+            ["question"]),
     ],
     "chat": [
         _make_tool("search_wiki",
@@ -276,6 +287,11 @@ TOOL_SCHEMAS: dict[str, list[dict]] = {
                 "content": {"type": "string", "description": "Contenu markdown de la réponse"},
             },
             ["question", "content"]),
+        _make_tool("ask_clarification",
+            "Pose une question précise à l'utilisateur quand sa requête est ambiguë "
+            "ou qu'il manque une information indispensable. À utiliser AVANT de supposer.",
+            {"question": {"type": "string", "description": "La question à poser à l'utilisateur"}},
+            ["question"]),
     ],
     "alerte": [
         _make_tool("search_wiki",
@@ -361,18 +377,27 @@ class TraceAIAgent:
              conn: sqlite3.Connection) -> dict:
 
         # 2. System prompt — buildé UNE FOIS, caché (conversation_loop.py ligne 315)
+        # Continuité cross-session : restaurer depuis SQLite si session connue
         if self._cached_system_prompt is None:
-            self._cached_system_prompt = self._build_system_prompt(mode, conn)
-            # Persister pour continuité (pattern hermes_state.py)
             if session_id:
-                from memory_engine import save_session_prompt
-                save_session_prompt(
-                    session_id, self.project_id, mode,
-                    self._cached_system_prompt, conn,
-                )
+                from memory_engine import load_session_prompt
+                self._cached_system_prompt = load_session_prompt(session_id, conn)
+                if self._cached_system_prompt:
+                    logger.debug("[agent] System prompt restauré (session %s)", session_id)
+            if self._cached_system_prompt is None:
+                self._cached_system_prompt = self._build_system_prompt(mode, conn)
+                if session_id:
+                    from memory_engine import save_session_prompt
+                    save_session_prompt(
+                        session_id, self.project_id, mode,
+                        self._cached_system_prompt, conn,
+                    )
 
-        # 3. Prefetch mémoire ONCE avant boucle (conversation_loop.py ligne 511–516)
+        # 3. Prefetch mémoire + auto-load skills pertinents ONCE avant boucle
         memory_block = self._prefetch_memory(conn)
+        skills_block = self._autoload_skills(task, mode)
+        if skills_block:
+            memory_block = (memory_block + "\n\n" + skills_block) if memory_block else skills_block
 
         # Initialiser les messages
         messages: list[dict] = list(history)
@@ -399,6 +424,16 @@ class TraceAIAgent:
                 logger.error("[agent] Erreur API Mistral: %s", e)
                 error = str(e)
                 break
+
+            # Normaliser content : Mistral retourne parfois une liste de blocs
+            # [{type: text, text: ...}, {type: reference, ...}] (format citations)
+            raw_content = response_msg.get("content") or ""
+            if isinstance(raw_content, list):
+                raw_content = " ".join(
+                    b.get("text", "") for b in raw_content
+                    if isinstance(b, dict) and b.get("type") == "text"
+                )
+            response_msg["content"] = raw_content
 
             tool_calls = response_msg.get("tool_calls") or []
 
@@ -427,6 +462,21 @@ class TraceAIAgent:
                         "name": fn_name,
                         "content": result,
                     })
+                    # Sortie anticipée si l'agent demande une clarification
+                    try:
+                        result_data = json.loads(result)
+                        if result_data.get("needs_clarification"):
+                            question = result_data.get("question", "")
+                            return {
+                                "answer": question,
+                                "needs_clarification": True,
+                                "question": question,
+                                "messages": messages,
+                                "iterations": budget.used,
+                                "mode": mode,
+                            }
+                    except (json.JSONDecodeError, AttributeError):
+                        pass
             else:
                 # Réponse finale — sortir de la boucle
                 final_response = response_msg.get("content") or ""
@@ -507,6 +557,59 @@ class TraceAIAgent:
             return build_memory_context_block(raw) if raw else ""
         except Exception as e:
             logger.debug("[agent] Prefetch mémoire échoué: %s", e)
+            return ""
+
+    def _autoload_skills(self, task: str, mode: str) -> str:
+        """
+        Pré-charge les skills pertinents avant la boucle.
+        Injecte le contenu des skills dont la description/tags matchent la tâche.
+        Analogue au prefetch mémoire — même pattern d'injection dans le user message.
+        """
+        if mode == "alerte":
+            return ""
+        try:
+            from skills_engine import parse_frontmatter, _skills_dir
+            skills_dir = _skills_dir(self.project_id)
+            if not skills_dir.exists():
+                return ""
+
+            task_lower = task.lower()
+            loaded = []
+            stopwords = {"when", "this", "that", "with", "from", "pour", "dans",
+                         "avec", "sur", "les", "des", "une", "use"}
+
+            for skill_file in sorted(skills_dir.glob("*.md")):
+                try:
+                    raw = skill_file.read_text(encoding="utf-8")
+                    fm, body = parse_frontmatter(raw)
+                    if not body.strip():
+                        continue
+                    name = fm.get("name") or skill_file.stem
+                    desc = str(fm.get("description", "")).lower()
+                    tags = fm.get("metadata", {}).get("hermes", {}).get("tags", [])
+                    relevant_words = [
+                        w for w in desc.split()
+                        if len(w) > 4 and w not in stopwords
+                    ]
+                    tag_match = any(str(t).lower() in task_lower for t in tags)
+                    word_match = any(w in task_lower for w in relevant_words)
+                    if word_match or tag_match:
+                        loaded.append(f"### Skill : {name}\n{body.strip()}")
+                except Exception:
+                    pass
+
+            if not loaded:
+                return ""
+
+            logger.debug("[agent] Auto-load skills : %d skill(s) chargé(s)", len(loaded))
+            return (
+                "<auto-loaded-skills>\n"
+                "[Skills chargés automatiquement — pertinents pour cette tâche]\n\n"
+                + "\n\n---\n\n".join(loaded)
+                + "\n</auto-loaded-skills>"
+            )
+        except Exception as e:
+            logger.debug("[agent] _autoload_skills échoué: %s", e)
             return ""
 
     def _inject_memory(self, messages: list[dict], memory_block: str,
@@ -684,6 +787,12 @@ class TraceAIAgent:
 
         if name == "check_deadlines":
             return self._tool_check_deadlines(conn)
+
+        if name == "ask_clarification":
+            return {
+                "needs_clarification": True,
+                "question": args.get("question", ""),
+            }
 
         return {"error": f"Tool inconnu : {name}"}
 

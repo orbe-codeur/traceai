@@ -1256,7 +1256,7 @@ def agent_chat(project_id: int, body: AgentChatBody):
     agent = TraceAIAgent(project_id, DB_PATH)
     result = agent.process(
         task=body.message,
-        mode=body.mode if body.mode in ("chat", "alerte") else "chat",
+        mode=body.mode if body.mode in ("chat", "alerte", "ingestion") else "chat",
         history=body.history or [],
         session_id=body.session_id,
     )
@@ -1264,6 +1264,8 @@ def agent_chat(project_id: int, body: AgentChatBody):
         "answer": result["answer"],
         "iterations": result["iterations"],
         "mode": result["mode"],
+        "needs_clarification": result.get("needs_clarification", False),
+        "question": result.get("question", ""),
     }
 
 
