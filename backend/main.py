@@ -1266,7 +1266,52 @@ def agent_chat(project_id: int, body: AgentChatBody):
         "mode": result["mode"],
         "needs_clarification": result.get("needs_clarification", False),
         "question": result.get("question", ""),
+        "choices": result.get("choices", []),
     }
+
+
+@app.post("/api/projects/{project_id}/orchestrate")
+def orchestrate(project_id: int, body: AgentChatBody):
+    """
+    Chat via l'orchestrateur multi-agent TraceAI.
+    L'orchestrateur décompose et délègue aux sous-agents en parallèle.
+    """
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+    conn.close()
+
+    from orchestrator import TraceAIOrchestratorAgent
+    agent = TraceAIOrchestratorAgent(project_id, DB_PATH)
+    result = agent.process(
+        task=body.message,
+        mode="orchestration",
+        history=body.history or [],
+        session_id=body.session_id,
+    )
+    return {
+        "answer": result["answer"],
+        "iterations": result["iterations"],
+        "mode": result["mode"],
+        "needs_clarification": result.get("needs_clarification", False),
+        "question": result.get("question", ""),
+        "choices": result.get("choices", []),
+    }
+
+
+@app.post("/api/projects/{project_id}/curator")
+def run_curator(project_id: int):
+    """Lance le curator de skills maintenant (synchrone)."""
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+    conn.close()
+
+    from curator import run_curator_now
+    result = run_curator_now(project_id)
+    return result
 
 
 @app.get("/api/projects/{project_id}/memory")

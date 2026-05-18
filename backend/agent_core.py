@@ -249,9 +249,16 @@ TOOL_SCHEMAS: dict[str, list[dict]] = {
             },
             ["name", "content"]),
         _make_tool("ask_clarification",
-            "Pose une question précise à l'utilisateur quand sa requête est ambiguë "
-            "ou qu'il manque une information indispensable. À utiliser AVANT de supposer.",
-            {"question": {"type": "string", "description": "La question à poser à l'utilisateur"}},
+            "Pose une question à l'utilisateur quand sa requête est ambiguë. "
+            "Fournir choices[] (2-4 options) pour guider la réponse. À utiliser AVANT de supposer.",
+            {
+                "question": {"type": "string", "description": "La question à poser"},
+                "choices": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Options de réponse (max 4). Omis = question ouverte.",
+                },
+            },
             ["question"]),
     ],
     "chat": [
@@ -288,9 +295,16 @@ TOOL_SCHEMAS: dict[str, list[dict]] = {
             },
             ["question", "content"]),
         _make_tool("ask_clarification",
-            "Pose une question précise à l'utilisateur quand sa requête est ambiguë "
-            "ou qu'il manque une information indispensable. À utiliser AVANT de supposer.",
-            {"question": {"type": "string", "description": "La question à poser à l'utilisateur"}},
+            "Pose une question à l'utilisateur quand sa requête est ambiguë. "
+            "Fournir choices[] (2-4 options) pour guider la réponse. À utiliser AVANT de supposer.",
+            {
+                "question": {"type": "string", "description": "La question à poser"},
+                "choices": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Options de réponse (max 4). Omis = question ouverte.",
+                },
+            },
             ["question"]),
     ],
     "alerte": [
@@ -471,6 +485,7 @@ class TraceAIAgent:
                                 "answer": question,
                                 "needs_clarification": True,
                                 "question": question,
+                                "choices": result_data.get("choices", []),
                                 "messages": messages,
                                 "iterations": budget.used,
                                 "mode": mode,
@@ -486,14 +501,30 @@ class TraceAIAgent:
                 })
                 break
 
-        # 5. Nudge post-tour — conversation_loop.py ligne 589
-        # Si tâche complexe (≥5 itérations) → tenter de créer un skill
-        if budget.used >= 5:
+        # 5. Post-tour : background review + compression si nécessaire
+        # Remplace trigger_skill_update par le vrai background review Hermes
+        if budget.used >= 3:
             try:
-                from skills_engine import trigger_skill_update
-                trigger_skill_update(self.project_id, task, messages)
+                from background_review import spawn_background_review
+                spawn_background_review(
+                    self.project_id,
+                    messages,
+                    self._cached_system_prompt or "",
+                    review_memory=(budget.used >= 5),
+                    review_skills=True,
+                )
             except Exception as e:
-                logger.debug("[agent] trigger_skill_update échoué: %s", e)
+                logger.debug("[agent] Background review spawn échoué: %s", e)
+
+        # Compression de contexte si les messages dépassent le seuil
+        if len(messages) > 10:
+            try:
+                from context_compressor import needs_compression, compress
+                if needs_compression(messages):
+                    messages = compress(messages)
+                    logger.info("[agent] Contexte compressé après tour")
+            except Exception as e:
+                logger.debug("[agent] Compression échouée: %s", e)
 
         return {
             "answer": final_response or (error and f"[Erreur: {error}]") or "",
@@ -789,9 +820,11 @@ class TraceAIAgent:
             return self._tool_check_deadlines(conn)
 
         if name == "ask_clarification":
+            choices = args.get("choices") or []
             return {
                 "needs_clarification": True,
                 "question": args.get("question", ""),
+                "choices": choices[:4] if choices else [],
             }
 
         return {"error": f"Tool inconnu : {name}"}
