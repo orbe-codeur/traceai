@@ -772,8 +772,13 @@ class TraceAIAgent:
                                     if fn.get("arguments"):
                                         existing["function"]["arguments"] += fn["arguments"]
 
-                            # Texte → yield chunk
+                            # Texte → yield chunk (normaliser liste blocs citations)
                             text_delta = delta.get("content") or ""
+                            if isinstance(text_delta, list):
+                                text_delta = " ".join(
+                                    b.get("text", "") for b in text_delta
+                                    if isinstance(b, dict) and b.get("type") == "text"
+                                )
                             if text_delta:
                                 full_content += text_delta
                                 yield text_delta
