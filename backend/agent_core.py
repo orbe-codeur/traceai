@@ -709,6 +709,249 @@ class TraceAIAgent:
 
         raise RuntimeError(f"Mistral rate limit — {max_retries} tentatives épuisées")
 
+    def _call_mistral_stream(self, messages: list[dict],
+                              tools: list[dict]):
+        """
+        Appel Mistral en mode streaming (stream=True).
+        Yield des chunks de texte au fil de la génération.
+        Retourne le message complet à la fin via StopIteration value.
+
+        Adapté de Hermes conversation_loop.py stream_callback pattern.
+        Note : Mistral ne streame PAS les tool_calls — si l'appel contient
+        des tools et que le modèle appelle un tool, on reçoit le message
+        complet en un seul chunk (même avec stream=True).
+        """
+        payload: dict[str, Any] = {
+            "model": LLM_MODEL,
+            "messages": [{"role": "system", "content": self._cached_system_prompt}]
+                        + messages,
+            "stream": True,
+        }
+        if tools:
+            payload["tools"] = tools
+
+        full_content = ""
+        full_message: dict = {}
+
+        with httpx.Client(timeout=120.0) as client:
+            with client.stream(
+                "POST",
+                LLM_API_URL,
+                headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+                json=payload,
+            ) as resp:
+                resp.raise_for_status()
+                for line in resp.iter_lines():
+                    if not line or line == "data: [DONE]":
+                        continue
+                    if line.startswith("data: "):
+                        try:
+                            chunk = json.loads(line[6:])
+                            choice = chunk["choices"][0]
+                            delta = choice.get("delta", {})
+
+                            # Tool calls → pas de streaming de texte
+                            if delta.get("tool_calls"):
+                                # Accumuler pour retourner le message complet
+                                if not full_message.get("tool_calls"):
+                                    full_message["tool_calls"] = []
+                                for tc in delta["tool_calls"]:
+                                    # Mistral stream : les tool_calls arrivent
+                                    # en fragments qu'il faut assembler
+                                    idx = tc.get("index", 0)
+                                    while len(full_message["tool_calls"]) <= idx:
+                                        full_message["tool_calls"].append(
+                                            {"id": "", "function": {"name": "", "arguments": ""}}
+                                        )
+                                    existing = full_message["tool_calls"][idx]
+                                    if tc.get("id"):
+                                        existing["id"] = tc["id"]
+                                    fn = tc.get("function", {})
+                                    if fn.get("name"):
+                                        existing["function"]["name"] += fn["name"]
+                                    if fn.get("arguments"):
+                                        existing["function"]["arguments"] += fn["arguments"]
+
+                            # Texte → yield chunk
+                            text_delta = delta.get("content") or ""
+                            if text_delta:
+                                full_content += text_delta
+                                yield text_delta
+
+                            if choice.get("finish_reason"):
+                                full_message["content"] = full_content
+                                full_message["role"] = "assistant"
+
+                        except (json.JSONDecodeError, KeyError):
+                            continue
+
+        return full_message
+
+    def process_stream(self, task: str, mode: str = "chat",
+                       history: list[dict] | None = None,
+                       session_id: str | None = None):
+        """
+        Version streaming de process().
+        Yield des événements SSE en JSON.
+
+        Événements :
+          {"type": "tool_call", "name": "search_wiki"}     — tool en cours
+          {"type": "text", "delta": "..."}                  — token de texte
+          {"type": "done", "iterations": N,
+           "needs_clarification": false, "choices": []}     — fin
+
+        Pattern inspiré de Hermes conversation_loop.py stream_callback.
+        Les tool calls ne sont pas streamés (Mistral ne le supporte pas) —
+        on envoie seulement un événement de status.
+        """
+        if mode not in TOOL_SCHEMAS:
+            mode = "chat"
+
+        budget = IterationBudget(self.MAX_ITERATIONS)
+        conn = self._get_conn()
+
+        try:
+            # Setup identique à _run()
+            if self._cached_system_prompt is None:
+                if session_id:
+                    from memory_engine import load_session_prompt
+                    self._cached_system_prompt = load_session_prompt(session_id, conn)
+                if self._cached_system_prompt is None:
+                    self._cached_system_prompt = self._build_system_prompt(mode, conn)
+                    if session_id:
+                        from memory_engine import save_session_prompt
+                        save_session_prompt(session_id, self.project_id, mode,
+                                            self._cached_system_prompt, conn)
+
+            memory_block = self._prefetch_memory(conn)
+            skills_block = self._autoload_skills(task, mode)
+            if skills_block:
+                memory_block = (memory_block + "\n\n" + skills_block) if memory_block else skills_block
+
+            messages: list[dict] = list(history or [])
+            messages.append({"role": "user", "content": task})
+            current_user_idx = len(messages) - 1
+            tools = TOOL_SCHEMAS[mode]
+            needs_clarification = False
+            clarification_question = ""
+            clarification_choices: list = []
+
+            while budget.consume():
+                api_messages = self._inject_memory(messages, memory_block, current_user_idx)
+
+                # Dernier tour → streamer le texte
+                # Tours intermédiaires → appel normal (tool calls)
+                try:
+                    if budget.used == 1:
+                        # Premier appel : peut être un tool call ou une réponse
+                        # On utilise le streaming mais on gère les deux cas
+                        gen = self._call_mistral_stream(api_messages, tools)
+                        response_msg: dict = {"content": "", "role": "assistant"}
+                        try:
+                            while True:
+                                delta = next(gen)
+                                yield json.dumps({"type": "text", "delta": delta})
+                        except StopIteration as e:
+                            if e.value:
+                                response_msg = e.value
+                            else:
+                                response_msg["content"] = ""
+                    else:
+                        # Tours suivants après tool calls — streamer si pas de tools attendus
+                        # On peut prédire : si des tools existent et budget > 1, possible tool call
+                        gen = self._call_mistral_stream(api_messages, tools)
+                        response_msg = {"content": "", "role": "assistant"}
+                        try:
+                            while True:
+                                delta = next(gen)
+                                yield json.dumps({"type": "text", "delta": delta})
+                        except StopIteration as e:
+                            if e.value:
+                                response_msg = e.value
+
+                except Exception as e:
+                    yield json.dumps({"type": "error", "message": str(e)})
+                    break
+
+                # Normaliser content
+                raw_content = response_msg.get("content") or ""
+                if isinstance(raw_content, list):
+                    raw_content = " ".join(
+                        b.get("text", "") for b in raw_content
+                        if isinstance(b, dict) and b.get("type") == "text"
+                    )
+                response_msg["content"] = raw_content
+
+                tool_calls = response_msg.get("tool_calls") or []
+
+                if tool_calls:
+                    messages.append({
+                        "role": "assistant",
+                        "content": raw_content,
+                        "tool_calls": tool_calls,
+                    })
+
+                    for tc in tool_calls:
+                        if not isinstance(tc, dict) or "function" not in tc:
+                            continue
+                        fn_name = tc["function"]["name"]
+                        try:
+                            fn_args = json.loads(tc["function"].get("arguments", "{}"))
+                        except json.JSONDecodeError:
+                            fn_args = {}
+
+                        # Signaler le tool call
+                        yield json.dumps({"type": "tool_call", "name": fn_name})
+
+                        result = self._execute_tool(fn_name, fn_args, conn)
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tc.get("id", ""),
+                            "name": fn_name,
+                            "content": result,
+                        })
+
+                        try:
+                            result_data = json.loads(result)
+                            if result_data.get("needs_clarification"):
+                                needs_clarification = True
+                                clarification_question = result_data.get("question", "")
+                                clarification_choices = result_data.get("choices", [])
+                                break
+                        except (json.JSONDecodeError, AttributeError):
+                            pass
+
+                    if needs_clarification:
+                        break
+                else:
+                    messages.append({"role": "assistant", "content": raw_content})
+                    break
+
+            # Background review
+            if budget.used >= 3:
+                try:
+                    from background_review import spawn_background_review
+                    spawn_background_review(
+                        self.project_id, messages,
+                        self._cached_system_prompt or "",
+                        review_memory=(budget.used >= 5),
+                        review_skills=True,
+                    )
+                except Exception:
+                    pass
+
+            yield json.dumps({
+                "type": "done",
+                "iterations": budget.used,
+                "mode": mode,
+                "needs_clarification": needs_clarification,
+                "question": clarification_question,
+                "choices": clarification_choices,
+            })
+
+        finally:
+            conn.close()
+
     # ------------------------------------------------------------------
     # Exécution des tools — dispatch vers fonctions TraceAI
     # ------------------------------------------------------------------

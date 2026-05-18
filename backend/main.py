@@ -13,7 +13,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
 load_dotenv(Path(__file__).parent.parent / ".env")
@@ -327,6 +327,10 @@ def startup():
     except Exception:
         pass  # FTS5 déjà configuré ou non disponible
     conn.close()
+
+    # Phase B — Cron engine
+    from cron_engine import startup as cron_startup
+    cron_startup()
 
 
 # ---------------------------------------------------------------------------
@@ -1312,6 +1316,131 @@ def run_curator(project_id: int):
     from curator import run_curator_now
     result = run_curator_now(project_id)
     return result
+
+
+# ---------------------------------------------------------------------------
+# Streaming — Server-Sent Events
+# ---------------------------------------------------------------------------
+
+@app.post("/api/projects/{project_id}/agent-chat/stream")
+def agent_chat_stream(project_id: int, body: AgentChatBody):
+    """
+    Version streaming de /agent-chat.
+    Retourne un flux SSE (text/event-stream).
+
+    Événements JSON sur chaque ligne :
+      {"type": "tool_call", "name": "search_wiki"}
+      {"type": "text", "delta": "...token..."}
+      {"type": "done", "iterations": 2, "needs_clarification": false, "choices": []}
+    """
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+    conn.close()
+
+    from agent_core import TraceAIAgent
+
+    def event_stream():
+        agent = TraceAIAgent(project_id, DB_PATH)
+        for event in agent.process_stream(
+            task=body.message,
+            mode=body.mode if body.mode in ("chat", "alerte", "ingestion") else "chat",
+            history=body.history or [],
+            session_id=body.session_id,
+        ):
+            yield f"data: {event}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Cron Engine
+# ---------------------------------------------------------------------------
+
+class CronJobBody(BaseModel):
+    name: str
+    mode: str = "alerte"
+    prompt: str
+    schedule: str
+
+
+@app.post("/api/projects/{project_id}/cron")
+def create_cron_job(project_id: int, body: CronJobBody):
+    """Crée un job cron planifié pour ce projet."""
+    conn = get_db()
+    if not conn.execute("SELECT id FROM projects WHERE id=?", (project_id,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet introuvable.")
+    conn.close()
+    try:
+        from cron_engine import create_job
+        return create_job(project_id, body.name, body.mode, body.prompt, body.schedule)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/api/projects/{project_id}/cron")
+def list_cron_jobs(project_id: int):
+    """Liste les jobs cron d'un projet."""
+    from cron_engine import list_jobs
+    return list_jobs(project_id)
+
+
+@app.get("/api/cron/{job_id}")
+def get_cron_job(job_id: str):
+    """Détails d'un job cron."""
+    from cron_engine import get_job
+    try:
+        return get_job(job_id)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.delete("/api/cron/{job_id}")
+def delete_cron_job(job_id: str):
+    """Supprime un job cron."""
+    from cron_engine import delete_job
+    try:
+        delete_job(job_id)
+        return {"deleted": job_id}
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post("/api/cron/{job_id}/pause")
+def pause_cron_job(job_id: str):
+    from cron_engine import pause_job
+    try:
+        return pause_job(job_id)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post("/api/cron/{job_id}/resume")
+def resume_cron_job(job_id: str):
+    from cron_engine import resume_job
+    try:
+        return resume_job(job_id)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post("/api/cron/{job_id}/trigger")
+def trigger_cron_job(job_id: str):
+    """Exécute un job cron immédiatement."""
+    from cron_engine import trigger_job
+    try:
+        return trigger_job(job_id)
+    except (KeyError, ValueError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/api/projects/{project_id}/memory")
