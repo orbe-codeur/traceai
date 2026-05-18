@@ -142,7 +142,8 @@ GUIDANCE_BY_MODE = {
 7. Sauvegarde ce que tu as appris en mémoire et en skills""",
 
     "chat": """# Mode CHAT
-0. Si la question est trop vague pour chercher (pas de machine, pas de sujet précis) → utilise ask_clarification.
+0. Utilise ask_clarification UNIQUEMENT si la question ne contient aucun mot-clé permettant de chercher.
+   N'utilise PAS ask_clarification si la question mentionne une machine, une pièce, une valeur ou une procédure.
 1. Cherche dans le wiki avec search_wiki (recherche par mots-clés)
 2. Si un skill pertinent existe, charge-le avec load_skill
 3. Complète avec search_memory si le wiki ne suffit pas
