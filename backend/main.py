@@ -858,6 +858,54 @@ import logging
 _log = logging.getLogger("traceai.phase2")
 
 
+def _build_phase_b_wiki(project_id: int, job_id: int, conn) -> None:
+    """
+    Étape 11 — construction automatique du wiki Phase B (markdown structuré) après le pipeline legacy.
+    Exécutée après status='done', erreurs silencieuses pour ne pas invalider le job.
+    Itère sur chaque document du projet et appelle wiki_engine.ingest_document_llm.
+    """
+    try:
+        from wiki_engine import ingest_document_llm, init_wiki
+        init_wiki(project_id)
+
+        docs = conn.execute(
+            "SELECT filename, doc_type FROM documents WHERE project_id=? AND status='chunked'",
+            (project_id,),
+        ).fetchall()
+
+        if not docs:
+            return
+
+        _log.info("[pipeline] Étape 11 — wiki Phase B : %d document(s)", len(docs))
+        proj_dir = PHASE2_DIR / str(project_id)
+
+        for filename, doc_type in docs:
+            filepath = proj_dir / filename
+            if not filepath.exists():
+                _log.warning("[pipeline] Fichier introuvable pour wiki : %s", filename)
+                continue
+            try:
+                _log.info("[pipeline] wiki-ingest LLM : %s (%s)", filename, doc_type or "unknown")
+                ingest_document_llm(
+                    project_id,
+                    filepath,
+                    doc_type or "unknown",
+                )
+            except Exception as exc:
+                _log.warning("[pipeline] wiki-ingest échoué pour %s: %s", filename, exc)
+
+        # Construire le knowledge graph après le wiki
+        try:
+            from graph_engine import build_graph
+            build_graph(project_id)
+            _log.info("[pipeline] Knowledge graph construit pour projet %d", project_id)
+        except Exception as exc:
+            _log.warning("[pipeline] build_graph échoué : %s", exc)
+
+    except Exception as exc:
+        _log.warning("[pipeline] Étape 11 wiki Phase B échouée (non-bloquant) : %s", exc)
+
+
 def _run_pipeline(project_id: int, job_id: int, urls: list[str]):
     """
     Pipeline synchrone (exécuté dans un thread par FastAPI BackgroundTasks).
@@ -895,17 +943,30 @@ def _run_pipeline(project_id: int, job_id: int, urls: list[str]):
         # Agent 6
         indexeur.run(project_id, job_id, chunks, conn, chroma_dir=CHROMA_DIR)
 
-        # Agent 7
-        wiki_pages = compilateur.run(project_id, job_id, chunks, conn)
+        if not chunks:
+            # Aucun nouveau chunk — tous les fichiers étaient déjà indexés
+            # Marquer les agents 7-10 comme skippés dans agents_json
+            from agents.utils import update_agent as _update_agent, append_log as _append_log
+            for key in ("compl", "qual", "rep", "alert"):
+                _update_agent(conn, job_id, key, "skipped", "déjà indexé")
+            _append_log(conn, job_id, "info", "pipeline", "Aucun nouveau fichier — agents 7-10 ignorés")
+            conn.commit()
+            _log.info(f"[pipeline] projet {project_id} — aucun nouveau fichier, agents 7-10 ignorés")
+        else:
+            # Agent 7
+            wiki_pages = compilateur.run(project_id, job_id, chunks, conn)
 
-        # Agent 8
-        qualite.run(project_id, job_id, wiki_pages, conn)
+            # Agent 8
+            qualite.run(project_id, job_id, wiki_pages, conn)
 
-        # Agent 9
-        repondeur.init(project_id, job_id, conn)
+            # Agent 9
+            repondeur.init(project_id, job_id, conn)
 
-        # Agent 10
-        alertes.run(project_id, job_id, wiki_pages, conn)
+            # Agent 10
+            alertes.run(project_id, job_id, wiki_pages, conn)
+
+            # Étape 11 (bonus) — construction wiki Phase B (markdown structuré Mistral)
+            _build_phase_b_wiki(project_id, job_id, conn)
 
         conn.execute(
             "UPDATE batch_jobs SET status='done', completed_at=datetime('now') WHERE id=?",
@@ -942,19 +1003,9 @@ async def ingest_documents(
         conn.close()
         raise HTTPException(status_code=404, detail="Projet introuvable.")
 
-    # ── Nettoyage complet avant chaque nouveau batch ──────────────────────────
-    # Supprimer les anciens fichiers du dossier projet
+    # ── Mode accumulatif — on ajoute sans écraser les docs existants ─────────
     proj_dir = PHASE2_DIR / str(project_id)
-    if proj_dir.exists():
-        shutil.rmtree(proj_dir)
     proj_dir.mkdir(parents=True, exist_ok=True)
-
-    # Supprimer les anciennes données de ce projet en base
-    conn.execute("DELETE FROM chunks     WHERE project_id=?", (project_id,))
-    conn.execute("DELETE FROM documents  WHERE project_id=?", (project_id,))
-    conn.execute("DELETE FROM wiki_pages WHERE project_id=?", (project_id,))
-    conn.execute("DELETE FROM alerts     WHERE project_id=?", (project_id,))
-    conn.commit()
     # ─────────────────────────────────────────────────────────────────────────
 
     # Sauvegarder et extraire les fichiers uploadés
@@ -1322,11 +1373,62 @@ def run_curator(project_id: int):
 # Streaming — Server-Sent Events
 # ---------------------------------------------------------------------------
 
+def _save_agent_turn(project_id: int, user_msg: str, assistant_msg: str) -> None:
+    """Persiste un échange agent dans conversations/messages."""
+    if not assistant_msg.strip():
+        return
+    conn = get_db()
+    try:
+        conv = conn.execute(
+            "SELECT id FROM conversations WHERE project_id=? ORDER BY id DESC LIMIT 1",
+            (project_id,),
+        ).fetchone()
+        if conv:
+            conv_id = conv[0]
+        else:
+            conn.execute("INSERT INTO conversations (project_id) VALUES (?)", (project_id,))
+            conv_id = conn.lastrowid
+        conn.execute(
+            "INSERT INTO messages (conversation_id, role, content) VALUES (?,?,?)",
+            (conv_id, "user", user_msg),
+        )
+        conn.execute(
+            "INSERT INTO messages (conversation_id, role, content) VALUES (?,?,?)",
+            (conv_id, "assistant", assistant_msg),
+        )
+        conn.commit()
+    except Exception as exc:
+        import logging as _log
+        _log.getLogger(__name__).warning("Impossible de sauvegarder le tour agent: %s", exc)
+    finally:
+        conn.close()
+
+
+@app.get("/api/projects/{project_id}/agent-chat/history")
+def get_agent_chat_history(project_id: int, limit: int = 40):
+    """Retourne les N derniers messages de l'historique agent pour ce projet."""
+    conn = get_db()
+    conv = conn.execute(
+        "SELECT id FROM conversations WHERE project_id=? ORDER BY id DESC LIMIT 1",
+        (project_id,),
+    ).fetchone()
+    if not conv:
+        conn.close()
+        return {"messages": []}
+    rows = conn.execute(
+        "SELECT role, content FROM messages WHERE conversation_id=? ORDER BY id DESC LIMIT ?",
+        (conv[0], limit),
+    ).fetchall()
+    conn.close()
+    return {"messages": [{"role": r[0], "content": r[1]} for r in reversed(rows)]}
+
+
 @app.post("/api/projects/{project_id}/agent-chat/stream")
 def agent_chat_stream(project_id: int, body: AgentChatBody):
     """
     Version streaming de /agent-chat.
     Retourne un flux SSE (text/event-stream).
+    Persiste chaque échange dans conversations/messages.
 
     Événements JSON sur chaque ligne :
       {"type": "tool_call", "name": "search_wiki"}
@@ -1343,6 +1445,7 @@ def agent_chat_stream(project_id: int, body: AgentChatBody):
 
     def event_stream():
         agent = TraceAIAgent(project_id, DB_PATH)
+        accumulated_text = ""
         for event in agent.process_stream(
             task=body.message,
             mode=body.mode if body.mode in ("chat", "alerte", "ingestion") else "chat",
@@ -1350,6 +1453,14 @@ def agent_chat_stream(project_id: int, body: AgentChatBody):
             session_id=body.session_id,
         ):
             yield f"data: {event}\n\n"
+            try:
+                evt = json.loads(event)
+                if evt.get("type") == "text":
+                    accumulated_text += evt.get("delta", "")
+                elif evt.get("type") == "done":
+                    _save_agent_turn(project_id, body.message, accumulated_text)
+            except Exception:
+                pass
 
     return StreamingResponse(
         event_stream(),

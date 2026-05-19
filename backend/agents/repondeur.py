@@ -124,7 +124,7 @@ def _search_wiki(project_id: int, query: str, conn: sqlite3.Connection, limit: i
 
 
 def _search_chroma(project_id: int, query: str, chroma_dir, limit: int = 5) -> list[dict]:
-    """Recherche sémantique dans ChromaDB."""
+    """Recherche sémantique dans ChromaDB avec embeddings Mistral pré-calculés."""
     if not chroma_dir:
         return []
     try:
@@ -150,7 +150,8 @@ def _search_chroma(project_id: int, query: str, chroma_dir, limit: int = 5) -> l
             }
             for doc, meta in zip(docs, metas)
         ]
-    except Exception:
+    except Exception as exc:
+        logger.warning("[repondeur] ChromaDB search échoué (projet %s) : %s", project_id, exc)
         return []
 
 

@@ -116,24 +116,43 @@ def run(
 ) -> list[dict]:
     """
     Groupe les chunks par machine et compile une page wiki pour chacune.
+    Utilise TOUS les chunks du projet (pas seulement le batch courant)
+    pour que les anciens documents restent visibles après chaque nouvel ajout.
     Génère aussi un index.md.
     Retourne la liste des wiki_pages créées.
     """
     update_agent(conn, job_id, "compl", "running", "")
-    append_log(conn, job_id, "info", "compl", f"Compilation du Machine Wiki — {len(chunks)} chunks disponibles")
+
+    # Charger TOUS les chunks du projet (accumulatif)
+    all_rows = conn.execute(
+        """SELECT c.id, c.content, c.machine_ref, c.page_ref,
+                  c.category, c.section_ref, d.filename
+           FROM chunks c
+           LEFT JOIN documents d ON c.document_id = d.id
+           WHERE c.project_id = ?""",
+        (project_id,),
+    ).fetchall()
+    all_chunks = [
+        {
+            "id": r[0], "content": r[1], "machine_ref": r[2],
+            "page_ref": r[3], "category": r[4],
+            "section_ref": r[5], "filename": r[6] or "",
+        }
+        for r in all_rows
+    ]
+    append_log(conn, job_id, "info", "compl",
+               f"Compilation du Machine Wiki — {len(all_chunks)} chunks totaux ({len(chunks)} nouveaux)")
 
     MIN_CHUNKS = 5   # ignorer les machines avec moins de 5 chunks
     MAX_MACHINES = 10  # max 10 pages wiki
 
+    # Machines qui ont reçu de nouveaux chunks dans ce batch
+    new_machines: set[str] = {c.get("machine_ref") or "Général" for c in chunks}
+
     # Grouper les chunks par machine
     by_machine: dict[str, list[dict]] = defaultdict(list)
-    for chunk in chunks:
-        machine = chunk.get("machine_ref") or ""
-        if not machine:
-            row = conn.execute(
-                "SELECT machine_ref FROM chunks WHERE id=?", (chunk["id"],)
-            ).fetchone()
-            machine = (row[0] if row else "") or "Général"
+    for chunk in all_chunks:
+        machine = chunk.get("machine_ref") or "Général"
         by_machine[machine].append(chunk)
 
     # Fusionner les machines avec peu de chunks dans "Général"
@@ -151,17 +170,47 @@ def run(
 
     wiki_pages: list[dict] = []
     machines = list(by_machine.keys())
-    append_log(conn, job_id, "info", "compl",
-               f"{len(machines)} page(s) wiki à compiler : {', '.join(machines)}")
 
-    for i, machine in enumerate(machines):
+    # Séparer machines à recompiler (nouvelles données) et machines inchangées
+    machines_to_compile = [m for m in machines if m in new_machines]
+    machines_unchanged  = [m for m in machines if m not in new_machines]
+
+    if machines_unchanged:
+        append_log(conn, job_id, "info", "compl",
+                   f"{len(machines_unchanged)} machine(s) inchangée(s) — wiki conservé : {', '.join(machines_unchanged)}")
+
+    append_log(conn, job_id, "info", "compl",
+               f"{len(machines_to_compile)} page(s) wiki à compiler : {', '.join(machines_to_compile) or 'aucune'}")
+
+    # Récupérer les pages existantes des machines inchangées
+    for machine in machines_unchanged:
+        row = conn.execute(
+            "SELECT id, content_md, contradictions_json, gaps_json FROM wiki_pages "
+            "WHERE project_id=? AND page_type='machine' AND page_name=?",
+            (project_id, machine),
+        ).fetchone()
+        if row:
+            wiki_pages.append({
+                "id": row[0], "machine": machine,
+                "content_md": row[1] or "",
+                "contradictions": json.loads(row[2] or "[]"),
+                "gaps": json.loads(row[3] or "[]"),
+                "n_chunks": len(by_machine[machine]),
+            })
+
+    for i, machine in enumerate(machines_to_compile):
         machine_chunks = by_machine[machine]
         append_log(conn, job_id, "info", "compl", f"Compilation wiki '{machine}' — {len(machine_chunks)} chunks · appel LLM")
         update_agent(conn, job_id, "compl", "running",
-                     f"{i}/{len(machines)} machines", i / max(len(machines), 1))
+                     f"{i}/{len(machines_to_compile)} machines", i / max(len(machines_to_compile), 1))
 
         wiki = _compile_machine_wiki(machine, machine_chunks)
 
+        # Upsert par machine : supprimer l'ancienne entrée puis réinsérer
+        conn.execute(
+            "DELETE FROM wiki_pages WHERE project_id=? AND page_type='machine' AND page_name=?",
+            (project_id, machine),
+        )
         cursor = conn.execute(
             """INSERT INTO wiki_pages
                (project_id, page_type, page_name, title, content_md,
@@ -201,6 +250,7 @@ def run(
         index_lines.append(f"- [[{p['machine']}]]{badges}")
 
     index_md = "\n".join(index_lines)
+    conn.execute("DELETE FROM wiki_pages WHERE project_id=? AND page_type='index'", (project_id,))
     conn.execute(
         """INSERT INTO wiki_pages
            (project_id, page_type, page_name, title, content_md, last_compiled_at)

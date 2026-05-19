@@ -39,4 +39,30 @@ export default {
   getMessages:      (convId) => http.get(`/conversations/${convId}/messages`),
   getAlerts:        (projectId) => http.get(`/projects/${projectId}/alerts`),
   dismissAlert:     (alertId) => http.patch(`/alerts/${alertId}/dismiss`),
+
+  // Phase B — Agent autonome
+  agentChat:           (projectId, data) => http.post(`/projects/${projectId}/agent-chat`, data),
+  getAgentChatHistory: (projectId, limit = 40) => http.get(`/projects/${projectId}/agent-chat/history`, { params: { limit } }),
+  getMemory:           (projectId) => http.get(`/projects/${projectId}/memory`),
+  getSkills:           (projectId) => http.get(`/projects/${projectId}/skills`),
+
+  // Phase B — Wiki LLM
+  wikiIngestLLM:   (projectId, data) => http.post(`/projects/${projectId}/wiki-ingest`, data),
+  wikiHealth:      (projectId) => http.get(`/projects/${projectId}/wiki-health`),
+  wikiLint:        (projectId) => http.get(`/projects/${projectId}/wiki-lint`),
+  wikiOverview:    (projectId) => http.get(`/projects/${projectId}/wiki-overview`),
+  wikiHeal:        (projectId) => http.post(`/projects/${projectId}/wiki-heal`),
+
+  // Phase B — Knowledge Graph
+  buildGraph:      (projectId) => http.post(`/projects/${projectId}/build-graph`),
+  getGraph:        (projectId) => http.get(`/projects/${projectId}/graph`),
+  graphHtmlUrl:    (projectId) => `/api/projects/${projectId}/graph.html`,
+
+  // Phase B+ — Cron
+  getCronJobs:     (projectId) => http.get(`/projects/${projectId}/cron`),
+  createCronJob:   (projectId, data) => http.post(`/projects/${projectId}/cron`, data),
+  deleteCronJob:   (jobId) => http.delete(`/cron/${jobId}`),
+  pauseCronJob:    (jobId) => http.post(`/cron/${jobId}/pause`),
+  resumeCronJob:   (jobId) => http.post(`/cron/${jobId}/resume`),
+  triggerCronJob:  (jobId) => http.post(`/cron/${jobId}/trigger`),
 }

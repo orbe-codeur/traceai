@@ -41,9 +41,22 @@ def run(
     file_paths: list[Path],
     conn: sqlite3.Connection,
 ) -> list[Path]:
-    """Dédoublonne et classe les fichiers. Retourne la liste unique."""
+    """
+    Dédoublonne et classe les fichiers.
+    Vérifie les doublons dans le batch courant ET dans les runs précédents (via DB).
+    Retourne uniquement les fichiers vraiment nouveaux.
+    """
     update_agent(conn, job_id, "tri", "running", "")
     append_log(conn, job_id, "info", "tri", f"Hash SHA-256 · {len(file_paths)} fichiers")
+
+    # Charger les hashes déjà traités pour ce projet (runs précédents)
+    already_done: set[str] = {
+        row[0]
+        for row in conn.execute(
+            "SELECT file_hash FROM documents WHERE project_id=? AND file_hash IS NOT NULL AND status='chunked'",
+            (project_id,),
+        ).fetchall()
+    }
 
     seen_hashes: dict[str, Path] = {}
     unique: list[Path] = []
@@ -56,10 +69,16 @@ def run(
             unique.append(path)
             continue
 
-        if h in seen_hashes:
+        if h in already_done:
+            # Déjà traité dans un run précédent — ignorer silencieusement
             duplicates += 1
-            logger.info(f"[tri] Doublon : {path.name} == {seen_hashes[h].name}")
-            # Marquer le document comme doublon
+            logger.info(f"[tri] Déjà indexé (run précédent) : {path.name}")
+            continue
+
+        if h in seen_hashes:
+            # Doublon dans le batch courant
+            duplicates += 1
+            logger.info(f"[tri] Doublon batch : {path.name} == {seen_hashes[h].name}")
             conn.execute(
                 "UPDATE documents SET status='duplicate' WHERE project_id=? AND filename=?",
                 (project_id, path.name),
@@ -67,7 +86,6 @@ def run(
         else:
             seen_hashes[h] = path
             unique.append(path)
-            # Stocker le hash et la catégorie
             cat = CATEGORIES_BY_EXT.get(path.suffix.lower(), "autre")
             conn.execute(
                 "UPDATE documents SET file_hash=?, doc_type=? WHERE project_id=? AND filename=?",
@@ -75,7 +93,7 @@ def run(
             )
 
     conn.commit()
-    counter = f"{len(unique)} uniques · {duplicates} doublon{'s' if duplicates != 1 else ''} retiré{'s' if duplicates != 1 else ''}"
+    counter = f"{len(unique)} nouveau{'x' if len(unique) > 1 else ''} · {duplicates} déjà indexé{'s' if duplicates > 1 else ''}"
     update_agent(conn, job_id, "tri", "done", counter)
     append_log(conn, job_id, "ok", "tri", f"Tri ✓ — {counter}")
     return unique

@@ -130,6 +130,26 @@ Après une tâche complexe (5+ tool calls), sauvegarde l'approche comme skill
 avec create_skill pour la réutiliser. Si un skill chargé est incomplet ou faux,
 mets-le à jour immédiatement. Les skills non maintenus deviennent des obstacles."""
 
+THINKING_GUIDANCE = """# Chaîne de raisonnement (Chain of Thought)
+Avant chaque réponse ET avant d'appeler tes premiers outils, raisonne toujours
+entre balises <thinking>...</thinking>. Contenu attendu :
+- Ce que tu comprends de la demande (machine ? procédure ? valeur ?)
+- Ton plan d'action (quels outils, dans quel ordre)
+- Les skills ou souvenirs pertinents que tu vas charger
+- Ton niveau de confiance
+
+EXEMPLE :
+<thinking>
+L'utilisateur demande le couple de serrage des brides DN150.
+Aucune machine précisée — je vais d'abord chercher "brides DN150 couple" dans le wiki.
+Si rien, je consulte la mémoire (on a peut-être déjà répondu à ça).
+Le skill "bilan-compresseur-jenny" pourrait être pertinent.
+Confiance : medium (l'info est peut-être dans le manuel p.47).
+</thinking>
+
+Les balises <thinking> sont rendues visuellement côté interface — le technicien
+voit ta réflexion en temps réel. Rends-la claire et utile, pas verbeuse."""
+
 GUIDANCE_BY_MODE = {
     "ingestion": """# Mode INGESTION
 0. Si le nom du fichier à ingérer n'est PAS mentionné → utilise ask_clarification IMMÉDIATEMENT.
@@ -148,7 +168,13 @@ GUIDANCE_BY_MODE = {
 2. Si un skill pertinent existe, charge-le avec load_skill
 3. Complète avec search_memory si le wiki ne suffit pas
 4. Cite TOUJOURS tes sources [Fichier, p.X] ou [Machine Wiki]
-5. Si une info est absente du wiki, dis-le clairement sans inventer""",
+5. Si une info est absente du wiki, dis-le clairement sans inventer
+
+# Si search_wiki ET search_chunks retournent 0 résultat
+→ Le wiki n'a pas encore été construit pour ce projet.
+→ Réponds EXACTEMENT : "Aucun document n'a été indexé pour ce projet.
+  Utilisez le bouton '+ Ajouter des documents' pour lancer l'ingestion."
+→ NE cherche PAS davantage, NE invente PAS de réponse.""",
 
     "alerte": """# Mode ALERTE
 Tu tournes en tâche planifiée sans utilisateur présent.
@@ -327,6 +353,196 @@ TOOL_SCHEMAS: dict[str, list[dict]] = {
             ["title", "description", "severity"]),
     ],
 }
+
+
+# ---------------------------------------------------------------------------
+# ThinkingStreamParser — détecte <thinking>...</thinking> dans le stream SSE
+# ---------------------------------------------------------------------------
+
+class ThinkingStreamParser:
+    """
+    Parse un stream de tokens et distingue le contenu <thinking> du texte normal.
+    Gère les balises partielles (tag coupé en plusieurs tokens).
+
+    Usage :
+        parser = ThinkingStreamParser()
+        for delta in token_stream:
+            for event_type, content in parser.feed(delta):
+                # event_type : 'thinking' | 'thinking_end' | 'text'
+    """
+
+    _OPEN  = '<thinking>'
+    _CLOSE = '</thinking>'
+
+    def __init__(self):
+        self._mode = 'text'   # 'text' | 'thinking'
+        self._buf  = ''       # buffer pour les balises partielles
+
+    def feed(self, delta: str) -> list:
+        events = []
+        self._buf += delta
+
+        while self._buf:
+            if self._mode == 'text':
+                idx = self._buf.find('<')
+                if idx == -1:
+                    # Pas de '<' — tout est du texte
+                    events.append(('text', self._buf))
+                    self._buf = ''
+                elif idx > 0:
+                    # Texte avant le '<'
+                    events.append(('text', self._buf[:idx]))
+                    self._buf = self._buf[idx:]
+                else:
+                    # Commence par '<'
+                    if self._buf.startswith(self._OPEN):
+                        self._mode = 'thinking'
+                        self._buf = self._buf[len(self._OPEN):]
+                    elif len(self._buf) < len(self._OPEN) and self._OPEN.startswith(self._buf):
+                        break  # tag partiel — attendre plus de tokens
+                    else:
+                        # '<' qui n'est pas une balise thinking
+                        events.append(('text', '<'))
+                        self._buf = self._buf[1:]
+
+            else:  # mode thinking
+                idx = self._buf.find('<')
+                if idx == -1:
+                    events.append(('thinking', self._buf))
+                    self._buf = ''
+                elif idx > 0:
+                    events.append(('thinking', self._buf[:idx]))
+                    self._buf = self._buf[idx:]
+                else:
+                    if self._buf.startswith(self._CLOSE):
+                        events.append(('thinking_end', ''))
+                        self._mode = 'text'
+                        self._buf = self._buf[len(self._CLOSE):].lstrip('\n')
+                    elif len(self._buf) < len(self._CLOSE) and self._CLOSE.startswith(self._buf):
+                        break  # balise fermante partielle
+                    else:
+                        events.append(('thinking', '<'))
+                        self._buf = self._buf[1:]
+
+        return events
+
+    def flush(self) -> list:
+        """Vide le buffer restant à la fin du stream."""
+        events = []
+        if self._buf:
+            mode = 'thinking' if self._mode == 'thinking' else 'text'
+            events.append((mode, self._buf))
+            self._buf = ''
+        return events
+
+
+# ---------------------------------------------------------------------------
+# Helpers résumé raisonnement (pour événements SSE tool_call / tool_result)
+# ---------------------------------------------------------------------------
+
+def _summarize_tool_args(fn_name: str, fn_args: dict) -> str:
+    """Résumé court des arguments d'un tool call (affiché dans la trace live)."""
+    q = fn_args.get("query", fn_args.get("task", fn_args.get("question", "")))
+    if q:
+        return str(q)[:80]
+    if fn_name == "ingest_document_llm":
+        return fn_args.get("filename", "")[:60]
+    if fn_name == "save_memory":
+        return fn_args.get("key", "")[:60]
+    if fn_name == "create_skill":
+        return fn_args.get("name", "")[:60]
+    if fn_name == "create_alert":
+        return fn_args.get("title", "")[:60]
+    if fn_name == "classify_doc":
+        return fn_args.get("filename", "")[:60]
+    if fn_name == "save_synthesis":
+        return fn_args.get("question", "")[:60]
+    if fn_name == "check_deadlines":
+        return fn_args.get("machine_ref", "toutes les machines")[:40]
+    return ""
+
+
+def _summarize_tool_result(fn_name: str, result_str: str) -> str:
+    """Résumé court du résultat d'un tool call (affiché dans la trace live)."""
+    try:
+        data = json.loads(result_str) if result_str else {}
+    except (json.JSONDecodeError, TypeError):
+        return (result_str or "")[:80]
+
+    if fn_name == "search_wiki":
+        results = data.get("results", data.get("pages", []))
+        if not results:
+            return "Aucun résultat wiki"
+        titles = [r.get("title", r.get("page", "?"))[:30] for r in results[:3]]
+        expanded = data.get("expanded", 0)
+        suffix = f" (+{expanded} graph)" if expanded else ""
+        return f"{len(results)} page(s){suffix} — {', '.join(titles)}"
+
+    if fn_name == "search_memory":
+        results = data.get("results", data.get("entries", []))
+        if not results:
+            return "Mémoire vide"
+        first = results[0]
+        preview = first.get("value", str(first))[:60] if isinstance(first, dict) else str(first)[:60]
+        return f"{len(results)} entrée(s) — {preview}"
+
+    if fn_name == "search_chunks":
+        results = data.get("results", data.get("chunks", []))
+        if not results:
+            return "Aucun extrait trouvé"
+        return f"{len(results)} extrait(s) trouvé(s)"
+
+    if fn_name == "save_synthesis":
+        return "Synthèse sauvegardée"
+
+    if fn_name == "save_memory":
+        key = data.get("key", "?")
+        return f"Mémorisé : {key}"
+
+    if fn_name == "create_skill":
+        return f"Skill créé : {data.get('name', '?')}"
+
+    if fn_name == "create_alert":
+        return f"Alerte créée : {data.get('title', '?')[:50]}"
+
+    if fn_name == "ingest_document_llm":
+        pages = data.get("pages_created", [])
+        return f"{len(pages)} page(s) créée(s)"
+
+    if fn_name == "ask_clarification":
+        return f"Question : {data.get('question', '')[:60]}"
+
+    if fn_name == "orient_wiki":
+        direction = data.get("direction", data.get("target", ""))
+        return f"Orientation : {str(direction)[:60]}" if direction else "Orientation calculée"
+
+    if fn_name == "classify_doc":
+        return f"Type : {data.get('doc_type', '?')}"
+
+    if fn_name == "load_skill":
+        name = data.get("name", "?")
+        return f"Skill chargé : {name}"
+
+    if fn_name == "check_deadlines":
+        items = data.get("deadlines", data.get("items", []))
+        overdue = [i for i in items if i.get("overdue")]
+        return f"{len(overdue)} échéance(s) dépassée(s)" if overdue else f"{len(items)} échéance(s) vérifiée(s)"
+
+    if fn_name == "parse_pdf":
+        pages = data.get("pages", data.get("page_count", "?"))
+        return f"{pages} page(s) extraite(s)"
+
+    if fn_name == "chunk_text":
+        chunks = data.get("chunks", [])
+        return f"{len(chunks)} chunk(s)"
+
+    if fn_name == "detect_contradictions":
+        contradictions = data.get("contradictions", [])
+        return f"{len(contradictions)} contradiction(s) détectée(s)" if contradictions else "Aucune contradiction"
+
+    # Fallback
+    result_preview = str(data)[:80]
+    return result_preview
 
 
 # ---------------------------------------------------------------------------
@@ -572,6 +788,10 @@ class TraceAIAgent:
         # 5. Tool use enforcement
         parts.append(TOOL_USE_ENFORCEMENT)
 
+        # 6. Chain of Thought — uniquement pour chat (pas alerte cron)
+        if mode == "chat":
+            parts.append(THINKING_GUIDANCE)
+
         return "\n\n".join(parts)
 
     # ------------------------------------------------------------------
@@ -716,6 +936,7 @@ class TraceAIAgent:
         Yield des chunks de texte au fil de la génération.
         Retourne le message complet à la fin via StopIteration value.
 
+        Retry exponentiel sur 429 — même pattern que _call_mistral.
         Adapté de Hermes conversation_loop.py stream_callback pattern.
         Note : Mistral ne streame PAS les tool_calls — si l'appel contient
         des tools et que le modèle appelle un tool, on reçoit le message
@@ -730,67 +951,88 @@ class TraceAIAgent:
         if tools:
             payload["tools"] = tools
 
-        full_content = ""
-        full_message: dict = {}
+        max_retries = 5
+        base_delay = 8.0
 
-        with httpx.Client(timeout=120.0) as client:
-            with client.stream(
-                "POST",
-                LLM_API_URL,
-                headers={"Authorization": f"Bearer {LLM_API_KEY}"},
-                json=payload,
-            ) as resp:
-                resp.raise_for_status()
-                for line in resp.iter_lines():
-                    if not line or line == "data: [DONE]":
-                        continue
-                    if line.startswith("data: "):
-                        try:
-                            chunk = json.loads(line[6:])
-                            choice = chunk["choices"][0]
-                            delta = choice.get("delta", {})
+        for attempt in range(max_retries):
+            full_content = ""
+            full_message: dict = {}
+            got_429 = False
+            wait_delay = base_delay * (2 ** attempt)
 
-                            # Tool calls → pas de streaming de texte
-                            if delta.get("tool_calls"):
-                                # Accumuler pour retourner le message complet
-                                if not full_message.get("tool_calls"):
-                                    full_message["tool_calls"] = []
-                                for tc in delta["tool_calls"]:
-                                    # Mistral stream : les tool_calls arrivent
-                                    # en fragments qu'il faut assembler
-                                    idx = tc.get("index", 0)
-                                    while len(full_message["tool_calls"]) <= idx:
-                                        full_message["tool_calls"].append(
-                                            {"id": "", "function": {"name": "", "arguments": ""}}
+            with httpx.Client(timeout=120.0) as client:
+                with client.stream(
+                    "POST",
+                    LLM_API_URL,
+                    headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+                    json=payload,
+                ) as resp:
+                    if resp.status_code == 429:
+                        retry_after = resp.headers.get("retry-after")
+                        wait_delay = float(retry_after) if retry_after else wait_delay
+                        logger.warning(
+                            "[agent/stream] Rate limit Mistral (429) — attente %.0fs (tentative %d/%d)",
+                            wait_delay, attempt + 1, max_retries,
+                        )
+                        got_429 = True
+                    else:
+                        resp.raise_for_status()
+                        for line in resp.iter_lines():
+                            if not line or line == "data: [DONE]":
+                                continue
+                            if line.startswith("data: "):
+                                try:
+                                    chunk = json.loads(line[6:])
+                                    choice = chunk["choices"][0]
+                                    delta = choice.get("delta", {})
+
+                                    # Tool calls → pas de streaming de texte
+                                    if delta.get("tool_calls"):
+                                        if not full_message.get("tool_calls"):
+                                            full_message["tool_calls"] = []
+                                        for tc in delta["tool_calls"]:
+                                            idx = tc.get("index", 0)
+                                            while len(full_message["tool_calls"]) <= idx:
+                                                full_message["tool_calls"].append(
+                                                    {"id": "", "function": {"name": "", "arguments": ""}}
+                                                )
+                                            existing = full_message["tool_calls"][idx]
+                                            if tc.get("id"):
+                                                existing["id"] = tc["id"]
+                                            fn = tc.get("function", {})
+                                            if fn.get("name"):
+                                                existing["function"]["name"] += fn["name"]
+                                            if fn.get("arguments"):
+                                                existing["function"]["arguments"] += fn["arguments"]
+
+                                    # Texte → yield chunk (normaliser liste blocs citations)
+                                    text_delta = delta.get("content") or ""
+                                    if isinstance(text_delta, list):
+                                        text_delta = " ".join(
+                                            b.get("text", "") for b in text_delta
+                                            if isinstance(b, dict) and b.get("type") == "text"
                                         )
-                                    existing = full_message["tool_calls"][idx]
-                                    if tc.get("id"):
-                                        existing["id"] = tc["id"]
-                                    fn = tc.get("function", {})
-                                    if fn.get("name"):
-                                        existing["function"]["name"] += fn["name"]
-                                    if fn.get("arguments"):
-                                        existing["function"]["arguments"] += fn["arguments"]
+                                    if text_delta:
+                                        full_content += text_delta
+                                        yield text_delta
 
-                            # Texte → yield chunk (normaliser liste blocs citations)
-                            text_delta = delta.get("content") or ""
-                            if isinstance(text_delta, list):
-                                text_delta = " ".join(
-                                    b.get("text", "") for b in text_delta
-                                    if isinstance(b, dict) and b.get("type") == "text"
-                                )
-                            if text_delta:
-                                full_content += text_delta
-                                yield text_delta
+                                    if choice.get("finish_reason"):
+                                        full_message["content"] = full_content
+                                        full_message["role"] = "assistant"
 
-                            if choice.get("finish_reason"):
-                                full_message["content"] = full_content
-                                full_message["role"] = "assistant"
+                                except (json.JSONDecodeError, KeyError):
+                                    continue
 
-                        except (json.JSONDecodeError, KeyError):
-                            continue
+            if not got_429:
+                return full_message
 
-        return full_message
+            # 429 — attendre avant de réessayer
+            if attempt < max_retries - 1:
+                # Signaler l'attente via un event spécial (lu par process_stream)
+                yield f"\x00RATE_LIMIT_WAIT:{wait_delay:.0f}\x00"
+                time.sleep(wait_delay)
+
+        raise RuntimeError(f"Mistral rate limit — {max_retries} tentatives épuisées. Réessayez dans quelques minutes.")
 
     def process_stream(self, task: str, mode: str = "chat",
                        history: list[dict] | None = None,
@@ -800,10 +1042,15 @@ class TraceAIAgent:
         Yield des événements SSE en JSON.
 
         Événements :
-          {"type": "tool_call", "name": "search_wiki"}     — tool en cours
-          {"type": "text", "delta": "..."}                  — token de texte
-          {"type": "done", "iterations": N,
-           "needs_clarification": false, "choices": []}     — fin
+          {"type": "thinking",     "delta": "..."}           — raisonnement live
+          {"type": "thinking_end"}                           — fin du bloc thinking
+          {"type": "tool_call",    "name": "search_wiki",
+                                   "args": "..."}            — tool en cours
+          {"type": "tool_result",  "name": "...",
+                                   "summary": "...", "ok": true}
+          {"type": "text",         "delta": "..."}           — token de réponse
+          {"type": "done",         "iterations": N,
+           "needs_clarification": false, "choices": []}      — fin
 
         Pattern inspiré de Hermes conversation_loop.py stream_callback.
         Les tool calls ne sont pas streamés (Mistral ne le supporte pas) —
@@ -844,35 +1091,38 @@ class TraceAIAgent:
             while budget.consume():
                 api_messages = self._inject_memory(messages, memory_block, current_user_idx)
 
-                # Dernier tour → streamer le texte
-                # Tours intermédiaires → appel normal (tool calls)
                 try:
-                    if budget.used == 1:
-                        # Premier appel : peut être un tool call ou une réponse
-                        # On utilise le streaming mais on gère les deux cas
-                        gen = self._call_mistral_stream(api_messages, tools)
-                        response_msg: dict = {"content": "", "role": "assistant"}
-                        try:
-                            while True:
-                                delta = next(gen)
-                                yield json.dumps({"type": "text", "delta": delta})
-                        except StopIteration as e:
-                            if e.value:
-                                response_msg = e.value
-                            else:
-                                response_msg["content"] = ""
-                    else:
-                        # Tours suivants après tool calls — streamer si pas de tools attendus
-                        # On peut prédire : si des tools existent et budget > 1, possible tool call
-                        gen = self._call_mistral_stream(api_messages, tools)
-                        response_msg = {"content": "", "role": "assistant"}
-                        try:
-                            while True:
-                                delta = next(gen)
-                                yield json.dumps({"type": "text", "delta": delta})
-                        except StopIteration as e:
-                            if e.value:
-                                response_msg = e.value
+                    gen = self._call_mistral_stream(api_messages, tools)
+                    response_msg: dict = {"content": "", "role": "assistant"}
+                    parser = ThinkingStreamParser()
+
+                    try:
+                        while True:
+                            delta = next(gen)
+                            # Signal interne rate_limit — intercepté avant le parser
+                            if delta.startswith("\x00RATE_LIMIT_WAIT:") and delta.endswith("\x00"):
+                                try:
+                                    wait_s = int(float(delta[16:-1]))
+                                except ValueError:
+                                    wait_s = 8
+                                yield json.dumps({"type": "rate_limit", "wait": wait_s})
+                                continue
+                            for ev_type, ev_content in parser.feed(delta):
+                                if ev_type == 'thinking' and ev_content:
+                                    yield json.dumps({"type": "thinking", "delta": ev_content})
+                                elif ev_type == 'thinking_end':
+                                    yield json.dumps({"type": "thinking_end"})
+                                elif ev_type == 'text' and ev_content:
+                                    yield json.dumps({"type": "text", "delta": ev_content})
+                    except StopIteration as e:
+                        # Vider le buffer restant
+                        for ev_type, ev_content in parser.flush():
+                            if ev_type == 'thinking' and ev_content:
+                                yield json.dumps({"type": "thinking", "delta": ev_content})
+                            elif ev_type == 'text' and ev_content:
+                                yield json.dumps({"type": "text", "delta": ev_content})
+                        if e.value:
+                            response_msg = e.value
 
                 except Exception as e:
                     yield json.dumps({"type": "error", "message": str(e)})
@@ -905,10 +1155,23 @@ class TraceAIAgent:
                         except json.JSONDecodeError:
                             fn_args = {}
 
-                        # Signaler le tool call
-                        yield json.dumps({"type": "tool_call", "name": fn_name})
+                        # Signaler le tool call (avec résumé des args)
+                        yield json.dumps({
+                            "type": "tool_call",
+                            "name": fn_name,
+                            "args": _summarize_tool_args(fn_name, fn_args),
+                        })
 
                         result = self._execute_tool(fn_name, fn_args, conn)
+
+                        # Signaler le résultat du tool
+                        yield json.dumps({
+                            "type": "tool_result",
+                            "name": fn_name,
+                            "summary": _summarize_tool_result(fn_name, result),
+                            "ok": True,
+                        })
+
                         messages.append({
                             "role": "tool",
                             "tool_call_id": tc.get("id", ""),
@@ -1017,9 +1280,9 @@ class TraceAIAgent:
         if name == "search_wiki":
             return self._tool_search_wiki_graph(args, conn)
 
-        # --- Recherche chunks (ChromaDB) ---
+        # --- Recherche chunks (ChromaDB + SQLite fallback) ---
         if name == "search_chunks":
-            return self._tool_search_chunks(args)
+            return self._tool_search_chunks(args, conn)
 
         # --- Mémoire ---
         if name == "save_memory":
@@ -1297,21 +1560,55 @@ class TraceAIAgent:
         except Exception as e:
             return {"error": str(e)}
 
-    def _tool_search_chunks(self, args: dict) -> dict:
-        """Recherche sémantique dans ChromaDB."""
+    def _tool_search_chunks(self, args: dict,
+                             conn: sqlite3.Connection | None = None) -> dict:
+        """
+        Recherche dans les chunks : ChromaDB (sémantique) + SQLite (keyword fallback).
+        ChromaDB est souvent vide — le fallback SQLite couvre le pipeline legacy.
+        """
+        query = args.get("query", "")
+        limit = args.get("limit", 5)
+        results = []
+
+        # 1. ChromaDB (sémantique)
         try:
             from agents.repondeur import _search_chroma
             from pathlib import Path as _Path
             chroma_dir = _Path(__file__).parent / "chroma_data"
-            results = _search_chroma(
+            chroma_results = _search_chroma(
                 self.project_id,
-                args.get("query", ""),
+                query,
                 chroma_dir if chroma_dir.exists() else None,
-                limit=args.get("limit", 5),
+                limit=limit,
             )
-            return {"results": results}
-        except Exception as e:
-            return {"results": [], "error": str(e)}
+            results.extend(chroma_results or [])
+        except Exception:
+            pass
+
+        # 2. SQLite fallback si ChromaDB vide
+        if not results and conn:
+            try:
+                words = [w for w in query.lower().split() if len(w) > 2]
+                if words:
+                    like_clauses = " OR ".join(["LOWER(content) LIKE ?" for _ in words])
+                    params = [f"%{w}%" for w in words] + [self.project_id, limit * 2]
+                    rows = conn.execute(
+                        f"""SELECT content, machine_ref, page_ref FROM chunks
+                            WHERE ({like_clauses}) AND project_id = ?
+                            LIMIT ?""",
+                        params,
+                    ).fetchall()
+                    for row in rows:
+                        results.append({
+                            "content": row[0][:600],
+                            "machine_ref": row[1] or "",
+                            "page_ref": row[2] or "",
+                            "source": "sqlite_chunks",
+                        })
+            except Exception:
+                pass
+
+        return {"results": results[:limit]}
 
     def _tool_ingest_document_llm(self, args: dict) -> dict:
         """
