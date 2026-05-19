@@ -171,9 +171,20 @@ def run(
     wiki_pages: list[dict] = []
     machines = list(by_machine.keys())
 
-    # Séparer machines à recompiler (nouvelles données) et machines inchangées
-    machines_to_compile = [m for m in machines if m in new_machines]
-    machines_unchanged  = [m for m in machines if m not in new_machines]
+    # Machines sans page wiki existante → toujours compiler (nouveau projet ou nouvelle machine)
+    existing_wiki = {
+        row[0]
+        for row in conn.execute(
+            "SELECT page_name FROM wiki_pages WHERE project_id=? AND page_type='machine'",
+            (project_id,),
+        ).fetchall()
+    }
+    machines_no_wiki = [m for m in machines if m not in existing_wiki]
+
+    # Séparer machines à recompiler (nouvelles données OU pas de wiki) et machines inchangées
+    machines_to_compile = [m for m in machines
+                           if m in new_machines or m in machines_no_wiki]
+    machines_unchanged  = [m for m in machines if m not in machines_to_compile]
 
     if machines_unchanged:
         append_log(conn, job_id, "info", "compl",

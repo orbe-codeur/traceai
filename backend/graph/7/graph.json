@@ -1,0 +1,1111 @@
+{
+  "nodes": [
+    {
+      "id": "SCHEMA",
+      "label": "Nom de la machine",
+      "type": "machine",
+      "color": "#2196F3",
+      "path": "wiki/7/SCHEMA.md",
+      "preview": "# Wiki Schema — maintenance industrielle ## Domaine maintenance industrielle"
+    },
+    {
+      "id": "raw/jennycompressormanual",
+      "label": "jennycompressormanual",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/raw/jennycompressormanual.md",
+      "preview": "<!-- image --> <!-- image --> <!-- image -->"
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "label": "2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote.md",
+      "preview": "### Procédure pour ajuster la **pression de coupure** du pressostat pilote (soupape pilote) sur un compresseur Jenny D'après la synthèse **[wiki/syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-p"
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "label": "2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur.md",
+      "preview": "### Procédure pour ajuster le régulateur de pression (soupape pilote) sur un compresseur Jenny Le **régulateur de pression** d'un compresseur Jenny est en réalité la **soupape pilote**, qui contrôle l"
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "label": "2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v.md",
+      "preview": "### Procédure pour changer la tension d'alimentation (115V ↔ 230V) sur un compresseur Jenny #### **1. Existence d'un sélecteur de tension** D'après le **[JennyCompressorManual.pdf, p.29]**, les compre"
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "label": "2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur.md",
+      "preview": "### Procédure pour nettoyer ou remplacer le filtre à air d'un compresseur Jenny D'après le **[JennyCompressorManual.pdf, section 4]**, le filtre à air (*air cleaner element*) est un élément critique p"
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "label": "2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre.md",
+      "preview": "### Procédure pour vérifier et tester la soupape de sécurité d'un compresseur Jenny #### **1. Prérequis** ##### **Outils nécessaires**"
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "label": "2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny.md",
+      "preview": "### Procédure pour vérifier le niveau d'huile du compresseur Jenny D'après le **[JennyCompressorManual.pdf, p.38]**, le niveau d'huile du compresseur Jenny doit être vérifié **régulièrement** pour évi"
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "label": "2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres.md",
+      "preview": "### Fréquence de purge du condensat du réservoir Pour un **compresseur Jenny**, il est impératif de **purger le condensat du réservoir après chaque utilisation**. Cette opération permet d'éviter :"
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "label": "2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour.md",
+      "preview": "### Fréquence de remplacement ou de nettoyage du filtre à air pour un compresseur Jenny D'après le **[JennyCompressorManual.pdf, p.22 et p.28]**, le filtre à air d'un compresseur Jenny est de type **s"
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "label": "2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress.md",
+      "preview": "Le dégagement de ventilation requis autour d'un compresseur Jenny est de **3 pieds (0,9 mètre) minimum** sur tous les côtés. Cette distance est essentielle pour assurer une circulation d'air adéquate "
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+      "label": "2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su.md",
+      "preview": "### Différentiel de pression de la soupape pilote sur un compresseur Jenny #### **1. Définition du différentiel de pression** Le **différentiel de pression** (ou *pressure differential*) est la différ"
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "label": "2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote.md",
+      "preview": "### Différentiel de pression de la soupape pilote Le **différentiel de pression** d'une soupape pilote correspond à la différence entre la **pression de coupure (*cut-out pressure*)** et la **pression"
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "label": "2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress.md",
+      "preview": "### Type d'huile synthétique recommandé pour le compresseur Jenny D'après le **[JennyCompressorManual.pdf, p.38]**, le compresseur Jenny doit être lubrifié avec de l'**huile synthétique *Jenny Ultimat"
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "label": "2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote.md",
+      "preview": "### Pression de coupure de la soupape pilote La **pression de coupure (cut-out pressure)** de la soupape pilote est une valeur spécifique à chaque installation et n'est pas standardisée. Elle dépend d"
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "label": "2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai.md",
+      "preview": "### Fréquence de remplacement ou de nettoyage du filtre à air d'un compresseur Jenny D'après le **[JennyCompressorManual.pdf, section 4]** et les bonnes pratiques industrielles, voici les recommandati"
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "label": "2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu.md",
+      "preview": "### Règles de sécurité pour les tuyaux et raccords sur un compresseur Jenny Pour éviter d'endommager les **tuyaux et raccords** sur un compresseur Jenny et garantir une utilisation sûre, suivez ces rè"
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "label": "2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir.md",
+      "preview": "### Procédure pour purger le condensat du réservoir d'air d'un compresseur Jenny #### **1. Pourquoi purger le condensat ?** Le condensat (mélange d'eau et d'huile) s'accumule dans le réservoir d'air e"
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "label": "2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/7/syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga.md",
+      "preview": "### Température maximale du compresseur Jenny avant arrêt obligatoire #### **Valeur maximale admissible** D'après les **spécifications techniques du constructeur** ([Jenny Compressor Wiki]), la tempér"
+    }
+  ],
+  "edges": [
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:AMBIGUOUS",
+      "from": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "AMBIGUOUS",
+      "title": "",
+      "color": "#BDBDBD",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:AMBIGUOUS",
+      "from": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "AMBIGUOUS",
+      "title": "",
+      "color": "#BDBDBD",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre->syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny->syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress->syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress:INFERRED",
+      "from": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote->syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:AMBIGUOUS",
+      "from": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "AMBIGUOUS",
+      "title": "",
+      "color": "#BDBDBD",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:AMBIGUOUS",
+      "from": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "AMBIGUOUS",
+      "title": "",
+      "color": "#BDBDBD",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote->syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "Section 1 mentionne des instructions de sécurité et de réglage de pression, liées aux pressostats",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "INFERRED",
+      "title": "Section sur les composants et réglages de pression implique des régulateurs ou soupapes pilotes",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "type": "INFERRED",
+      "title": "Section 1 ou 2 pourrait aborder les spécifications électriques, incluant la tension d'alimentation",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "Section sur les composants ou maintenance implique l'entretien du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "Section sur la sécurité ou les composants critiques implique les soupapes de sécurité",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "Section sur la maintenance ou les composants implique le niveau d'huile",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "type": "INFERRED",
+      "title": "Section sur la maintenance ou les composants implique la purge du condensat",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "Section sur la sécurité ou l'installation implique les exigences de ventilation",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "INFERRED",
+      "title": "Section sur la maintenance ou les composants implique le type d'huile recommandé",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "Section 1 aborde explicitement les instructions de sécurité",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "raw/jennycompressormanual->syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga:INFERRED",
+      "from": "raw/jennycompressormanual",
+      "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "type": "INFERRED",
+      "title": "Section sur la maintenance ou les composants implique la température de fonctionnement maximale",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v->raw/jennycompressormanual:INFERRED",
+      "from": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "to": "raw/jennycompressormanual",
+      "type": "INFERRED",
+      "title": "Documentation technique de référence pour la procédure de changement de tension",
+      "color": "#FF5722",
+      "confidence": 1.0
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "Procédure de réglage liée aux paramètres électriques du compresseur (pression et tension sont des paramètres interdépendants)",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "Maintenance générale du compresseur nécessitant une vérification des conditions électriques pour la sécurité",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "Règles de sécurité électriques liées à la manipulation de la tension d'alimentation",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur->syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai:INFERRED",
+      "from": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "to": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "type": "INFERRED",
+      "title": "Fréquence recommandée pour le nettoyage ou remplacement du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur->syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour:INFERRED",
+      "from": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "to": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "type": "INFERRED",
+      "title": "Fréquence de maintenance du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "Règles de sécurité générales pour l'entretien du compresseur",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur->raw/jennycompressormanual:INFERRED",
+      "from": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "to": "raw/jennycompressormanual",
+      "type": "INFERRED",
+      "title": "Référence au manuel technique pour les spécifications du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "Lien avec la maintenance des composants critiques (filtre et soupape de sécurité)",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:AMBIGUOUS",
+      "from": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "AMBIGUOUS",
+      "title": "Maintenance générale du compresseur incluant des éléments critiques comme le filtre",
+      "color": "#BDBDBD",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres->syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "to": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "type": "INFERRED",
+      "title": "détaille la procédure de purge du condensat mentionnée implicitement",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "liée à la gestion des risques d'explosion par surpression",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "liée à la maintenance préventive pour éviter l'accumulation d'humidité",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "liée à la régulation de pression et prévention des risques d'explosion",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres->syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "INFERRED",
+      "title": "liée à la maintenance générale pour éviter la corrosion",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "liée aux risques d'explosion et aux bonnes pratiques de maintenance",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "Procédure détaillée pour le nettoyage ou remplacement du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour->syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "type": "INFERRED",
+      "title": "Maintenance périodique liée à l'entretien général du compresseur",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "Conditions environnementales influençant la fréquence de nettoyage du filtre",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour->syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "type": "INFERRED",
+      "title": "Indicateurs de performance ou de panne liés à l'encrassement du filtre",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "Sécurité liée à la manipulation du filtre pendant l'entretien",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "Le différentiel de pression est lié à la pression de coupure (cut-out pressure) mentionnée dans le réglage de la soupape pilote.",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "Le différentiel de pression dépend directement de la pression de coupure, un concept central dans cette page.",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su->raw/jennycompressormanual:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+      "to": "raw/jennycompressormanual",
+      "type": "INFERRED",
+      "title": "La page cite explicitement une source externe (manuel JennyCompressorManual.pdf) pour un exemple concret, suggérant une relation avec le contenu technique du manuel.",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "Contient des instructions détaillées complémentaires pour le nettoyage/remplacement du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai->syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "to": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+      "type": "INFERRED",
+      "title": "Contient des informations redondantes ou similaires sur la fréquence de maintenance du filtre à air",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "L'obstruction du filtre à air peut impacter la pression du système et nécessiter un ajustement de la soupape pilote",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "Un filtre à air encrassé peut réduire l'efficacité de la ventilation et nécessiter un dégagement accru",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai->syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "type": "INFERRED",
+      "title": "Un filtre à air obstrué peut entraîner une surchauffe du compresseur",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "L'utilisation d'un filtre endommagé peut violer les règles de sécurité en laissant passer des particules dangereuses",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "La pression nominale des composants doit être compatible avec la pression de coupure du pressostat pilote pour éviter les risques de surpression.",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+      "type": "INFERRED",
+      "title": "Le réglage du régulateur de pression ou de la soupape pilote influence directement la pression maximale de fonctionnement, donc la compatibilité des tuyaux et raccords.",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "La pression de coupure de la soupape pilote détermine la pression maximale admissible pour les tuyaux et raccords.",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+      "type": "INFERRED",
+      "title": "Le différentiel de pression de la soupape pilote affecte la stabilité de la pression dans le système et donc les contraintes sur les tuyaux et raccords.",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+      "type": "INFERRED",
+      "title": "Le différentiel de pression de la soupape pilote influence la pression maximale supportable par les tuyaux et raccords.",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "La soupape de sécurité doit être testée pour s'assurer qu'elle limite correctement la pression et protège les tuyaux et raccords contre les surpressions.",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->raw/jennycompressormanual:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "raw/jennycompressormanual",
+      "type": "INFERRED",
+      "title": "Le manuel technique du compresseur Jenny contient des spécifications techniques (pressions nominales, types de raccords) essentielles pour respecter les règles de sécurité des tuyaux.",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu->syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "type": "INFERRED",
+      "title": "La température maximale admissible du compresseur peut influencer la durabilité des tuyaux et raccords, notamment en cas de surchauffe.",
+      "color": "#FF5722",
+      "confidence": 0.7
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "La purge du condensat est liée à la vérification de la soupape de sécurité pour éviter les risques d'explosion.",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "Le condensat peut obstruer le filtre air, nécessitant un nettoyage ou remplacement régulier.",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "Le condensat peut contenir de l'huile, nécessitant une vérification du niveau d'huile après purge.",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir->syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "type": "INFERRED",
+      "title": "Cette page est directement liée à la fréquence de purge du condensat, complémentaire à la procédure.",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir->syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+      "type": "INFERRED",
+      "title": "La procédure de purge implique des règles de sécurité spécifiques pour éviter les accidents.",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir->raw/jennycompressormanual:INFERRED",
+      "from": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+      "to": "raw/jennycompressormanual",
+      "type": "INFERRED",
+      "title": "Le manuel du compresseur Jenny contient des informations techniques ou des avertissements spécifiques liés à la purge du condensat.",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress:INFERRED",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+      "type": "INFERRED",
+      "title": "L'huile recommandée pour éviter la surchauffe du compresseur Jenny est Jenny Ultimate Blue.",
+      "color": "#FF5722",
+      "confidence": 0.95
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress:INFERRED",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+      "type": "INFERRED",
+      "title": "La recommandation de dégagement de 3 pieds (0,9 mètre) autour du compresseur pour éviter la surchauffe est liée à la ventilation.",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre:INFERRED",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+      "type": "INFERRED",
+      "title": "La soupape de sécurité est mentionnée comme mécanisme de sécurité, mais sans arrêt automatique basé sur la température.",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote:INFERRED",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+      "type": "INFERRED",
+      "title": "Le pressostat est un mécanisme de sécurité basé sur la pression, distinct de la température.",
+      "color": "#FF5722",
+      "confidence": 0.8
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur:INFERRED",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+      "type": "INFERRED",
+      "title": "Le filtre à air peut influencer la température du compresseur en cas d'encrassement.",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny:INFERRED",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+      "type": "INFERRED",
+      "title": "Le niveau d'huile est crucial pour la lubrification et la dissipation thermique du compresseur.",
+      "color": "#FF5722",
+      "confidence": 0.75
+    },
+    {
+      "id": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga->syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres:AMBIGUOUS",
+      "from": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+      "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+      "type": "AMBIGUOUS",
+      "title": "La purge du condensat peut être liée à la maintenance thermique du compresseur.",
+      "color": "#BDBDBD",
+      "confidence": 0.7
+    }
+  ],
+  "meta": {
+    "project_id": 7,
+    "built_at": "2026-05-19",
+    "total_nodes": 19,
+    "total_edges": 105,
+    "extracted_edges": 0,
+    "inferred_edges": 105
+  }
+}

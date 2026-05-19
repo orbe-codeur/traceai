@@ -1,0 +1,693 @@
+{
+  "summary": {
+    "timestamp": "2026-05-19T21:45:34.973380",
+    "project_id": 7,
+    "total": 30,
+    "passed": 9,
+    "failed": 21,
+    "pass_rate": 30.0,
+    "avg_recall": 29.5,
+    "by_type": {
+      "valeur_exacte": "2/10 (20%)",
+      "procedure": "2/10 (20%)",
+      "comprehension": "5/10 (50%)"
+    },
+    "by_difficulty": {
+      "facile": "4/11 (36%)",
+      "moyen": "4/16 (25%)",
+      "difficile": "1/3 (33%)"
+    },
+    "avg_latency_s": 56.2
+  },
+  "results": [
+    {
+      "id": "T01",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "Quel est le couple de serrage des boulons de culasse du compresseur Jenny ?",
+      "answer": "Aucun document indexé ne contient d'information sur le compresseur Jenny ou ses couples de serrage. Souhaitez-vous : \n1. Ajouter des documents techniques (manuels, fiches de maintenance) pour ce compresseur ?\n2. Vérifier si une autre machine ou un autre terme est concerné ?\n3. Fournir une valeur gén",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "6",
+          "ft-lb",
+          "8.1",
+          "Nm"
+        ],
+        "passed": false
+      },
+      "elapsed": 80.23,
+      "iterations": 5,
+      "error": null
+    },
+    {
+      "id": "T02",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "Quelle est la pression de coupure de la soupape pilote ?",
+      "answer": "La pression de coupure de la soupape pilote **n'est pas une valeur standardisée** et dépend des réglages spécifiques à votre équipement. Voici comment la vérifier ou l'ajuster :\n\n---\n\n### Procédure pour trouver ou régler la pression de coupure\nD'après le **[JennyCompressorManual.pdf, p.39]** :\n1. **",
+      "score": {
+        "recall": 0.3333333333333333,
+        "found": [
+          "psi"
+        ],
+        "missing": [
+          "125",
+          "175"
+        ],
+        "passed": false
+      },
+      "elapsed": 83.88,
+      "iterations": 6,
+      "error": null
+    },
+    {
+      "id": "T03",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "Quel est le différentiel de pression de la soupape pilote ?",
+      "answer": "### Différentiel de pression de la soupape pilote\n\nLe **différentiel de pression** d'une soupape pilote correspond à la différence entre la **pression de coupure (*cut-out pressure*)** et la **pression de redémarrage (*cut-in pressure*)**. Cette valeur n'est pas standardisée et dépend des réglages s",
+      "score": {
+        "recall": 1.0,
+        "found": [
+          "20",
+          "psi"
+        ],
+        "missing": [],
+        "passed": true
+      },
+      "elapsed": 86.05,
+      "iterations": 5,
+      "error": null
+    },
+    {
+      "id": "T04",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "Quelle est la température maximale du compresseur avant arrêt obligatoire ?",
+      "answer": "Aucune information sur la température maximale d'arrêt obligatoire du compresseur Jenny n'a été trouvée dans les documents indexés. \n\nSouhaitez-vous : \n1. **Consulter le manuel constructeur** (ex. : *JennyCompressorManual.pdf*) pour y rechercher cette valeur ?\n2. **Ajouter le manuel constructeur** p",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "240",
+          "115"
+        ],
+        "passed": false
+      },
+      "elapsed": 38.6,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T05",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "Quel dégagement de ventilation est requis autour du compresseur ?",
+      "answer": "Le compresseur Jenny nécessite un **dégagement minimum de 3 pieds (≈ 91 cm) autour de l'unité** pour assurer une ventilation adéquate etCette exigence est détaillée dans le **[JennyCompressorManual.pdf, p.22]**.\n\nVoici les points clés à respecter :\n- **3 pieds (≈ 91 cm)** de dégagement **sur tous le",
+      "score": {
+        "recall": 0.5,
+        "found": [
+          "3",
+          "pied"
+        ],
+        "missing": [
+          "0.9",
+          "mètre"
+        ],
+        "passed": true
+      },
+      "elapsed": 74.07,
+      "iterations": 5,
+      "error": null
+    },
+    {
+      "id": "T06",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "À quelle fréquence faut-il purger le condensat du réservoir ?",
+      "answer": "Aucun document indexé ne contient la fréquence de purge du condensat pour le réservoir du compresseur Jenny. \n\nSouhaitez-vous :\n1. **Consulter le manuel technique Jenny** pour y rechercher cette information manuellement ?\n2. **Ajouter des documents** (ex : manuel d'entretien Jenny) pour indexer cett",
+      "score": {
+        "recall": 0.3333333333333333,
+        "found": [
+          "quotidien"
+        ],
+        "missing": [
+          "daily",
+          "chaque jour"
+        ],
+        "passed": false
+      },
+      "elapsed": 85.91,
+      "iterations": 5,
+      "error": null
+    },
+    {
+      "id": "T07",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "À quelle fréquence faut-il vérifier la tension de la courroie d'entraînement ?",
+      "answer": "Aucun document n'a été indexé pour ce projet concernant les compresseurs Jenny. Souhaitez-vous : \n1. Ajouter dès maintenant le manuel constructeur ou un rapport de maintenance pour obtenir une réponse précise ?\n2. Obtenir une recommandation générique pour la vérification des courroies d'entraînement",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "50",
+          "heure",
+          "50h"
+        ],
+        "passed": false
+      },
+      "elapsed": 58.8,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T08",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "À quelle fréquence faut-il remplacer ou nettoyer le filtre à air ?",
+      "answer": "Aucune information sur la fréquence de remplacement ou de nettoyage du filtre à air n'est disponible dans les documents indexés pour ce projet.\n\nD'après le manuel Jenny (Section 4), cette information existe mais n'a pas encore été synthétisée.\n\nSouhaitez-vous :\n1. **Consulter directement la Section ",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "100",
+          "heure",
+          "100h"
+        ],
+        "passed": false
+      },
+      "elapsed": 50.97,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T09",
+      "type": "valeur_exacte",
+      "difficulty": "facile",
+      "question": "Quand faut-il faire la première vidange d'huile du compresseur ?",
+      "answer": "<Aucun document n'a été indexé pour ce projet.\nUtilisez le bouton **+ Ajouter des documents** pour lancer l'ingestion.>",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "20",
+          "heure",
+          "20h"
+        ],
+        "passed": false
+      },
+      "elapsed": 61.58,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T10",
+      "type": "valeur_exacte",
+      "difficulty": "moyen",
+      "question": "Quel type d'huile synthétique est recommandé pour le compresseur Jenny ?",
+      "answer": "",
+      "score": {
+        "recall": 0,
+        "found": [],
+        "missing": [
+          "Jenny",
+          "Ultimate",
+          "Blue",
+          "synthétique"
+        ],
+        "passed": false
+      },
+      "elapsed": 90.1,
+      "iterations": 0,
+      "error": "timed out"
+    },
+    {
+      "id": "T11",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Quelles sont les étapes pour purger le condensat du réservoir d'air ?",
+      "answer": "",
+      "score": {
+        "recall": 0,
+        "found": [],
+        "missing": [
+          "OFF",
+          "drain",
+          "valve",
+          "10 psi",
+          "robinet"
+        ],
+        "passed": false
+      },
+      "elapsed": 90.1,
+      "iterations": 0,
+      "error": "timed out"
+    },
+    {
+      "id": "T12",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment ajuster le régulateur de pression ?",
+      "answer": "",
+      "score": {
+        "recall": 0,
+        "found": [],
+        "missing": [
+          "bouton",
+          "knob",
+          "horaire",
+          "clockwise",
+          "pousser",
+          "verrouiller"
+        ],
+        "passed": false
+      },
+      "elapsed": 90.11,
+      "iterations": 0,
+      "error": "timed out"
+    },
+    {
+      "id": "T13",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment connecter un tuyau au compresseur ?",
+      "answer": "Aucun document n'a été indexé pour ce projet.\nUtilisez le bouton **+ Ajouter des documents** pour lancer l'ingestion.",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "0 PSI",
+          "collar",
+          "coupler",
+          "connecteur",
+          "tirer"
+        ],
+        "passed": false
+      },
+      "elapsed": 51.64,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T14",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment vérifier le niveau d'huile du compresseur ?",
+      "answer": "### Procédure pour vérifier le niveau d'huile du compresseur Jenny\n\nD'après le **[JennyCompressorManual.pdf, p.38]** et les bonnes pratiques de maintenance, voici la procédure détaillée pour vérifier le niveau d'huile de votre compresseur Jenny :\n\n---\n\n#### **1. Prérequis**\n##### **Outils nécessaire",
+      "score": {
+        "recall": 0.3333333333333333,
+        "found": [
+          "bouchon",
+          "carter"
+        ],
+        "missing": [
+          "plug",
+          "tournevis",
+          "screwdriver",
+          "crankcase"
+        ],
+        "passed": false
+      },
+      "elapsed": 64.67,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T15",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment changer l'huile du compresseur Jenny ?",
+      "answer": "<thinking>\nLes résultats de `search_chunks` confirment que la **procédure de vidange d'huile** pour le compresseur Jenny est bien documentée dans le **JennyCompressorManual.pdf, p.38**. Voici les étapes clés extraites :\n\n1. **Prérequis** :\n   - Éteindre et débrancher le compresseur.\n   - Placer le c",
+      "score": {
+        "recall": 1.0,
+        "found": [
+          "drain",
+          "vidange",
+          "bouchon",
+          "cap",
+          "remplir",
+          "fill"
+        ],
+        "missing": [],
+        "passed": true
+      },
+      "elapsed": 51.41,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T16",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment vérifier et tester la soupape de sécurité ?",
+      "answer": "Aucune procédure spécifique pour **tester ou vérifier la soupape de sécurité d'un compresseur Jenny** n'a été trouvée dans les documents indexés. Cependant, j'ai rédigé une **procédure générique** basée sur les bonnes pratiques industrielles. Voici les étapes à suivre :\n\n---\n\n### **Procédure pour vé",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "ring",
+          "bague",
+          "plunger",
+          "piston",
+          "tirer",
+          "pull"
+        ],
+        "passed": false
+      },
+      "elapsed": 69.99,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T17",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment nettoyer ou remplacer le filtre à air ?",
+      "answer": "Les instructions pour nettoyer ou remplacer le filtre à air se trouvent dans la **Section 4** du manuel Jenny (maintenance). Souhaitez-vous :",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "dévisser",
+          "unscrew",
+          "élément",
+          "element",
+          "souffler",
+          "blow"
+        ],
+        "passed": false
+      },
+      "elapsed": 18.31,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T18",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment changer la tension de la courroie d'entraînement ?",
+      "answer": "Aucune procédure pour changer la tension de la courroie d'entraînement du compresseur Jenny n'a été trouvée dans les documents indexés. Voici les options pour obtenir cette information :\n\n1. **Consulter le manuel papier** du compresseur Jenny (rechercher les sections \"Maintenance\" ou \"Courroie d'ent",
+      "score": {
+        "recall": 0.4,
+        "found": [
+          "vis",
+          "tension"
+        ],
+        "missing": [
+          "screw",
+          "clockwise",
+          "horaire"
+        ],
+        "passed": false
+      },
+      "elapsed": 73.69,
+      "iterations": 4,
+      "error": null
+    },
+    {
+      "id": "T19",
+      "type": "procedure",
+      "difficulty": "difficile",
+      "question": "Comment ajuster la pression de coupure du pressostat pilote ?",
+      "answer": "La procédure pour ajuster la **pression de coupure du pressostat pilote** sur un compresseur Jenny est détaillée ci-dessous. Elle est basée sur la synthèse **[wiki/syntheses/2026-05-19-comment-ajuster-le-régulateur-de-pression-soupape-pilote-sur.md]** et adaptée à votre demande.\n\n---\n\n### **Étapes p",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "screw A",
+          "vis A",
+          "clockwise",
+          "nut B",
+          "ecrou B"
+        ],
+        "passed": false
+      },
+      "elapsed": 48.93,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T20",
+      "type": "procedure",
+      "difficulty": "moyen",
+      "question": "Comment changer la tension d'alimentation entre 115V et 230V ?",
+      "answer": "<thinking>\nLes recherches dans les **chunks indexés** (documents bruts) ne fournissent **aucune information précise** sur la procédure de changement de tension d'alimentation (115V/230V) pour les compresseurs Jenny.\n\nCependant, le chunk suivant (page 22 du manuel Jenny) mentionne :\n> *\"3.) Connect e",
+      "score": {
+        "recall": 0.6,
+        "found": [
+          "switch",
+          "115",
+          "230"
+        ],
+        "missing": [
+          "dual voltage",
+          "hitch pin"
+        ],
+        "passed": true
+      },
+      "elapsed": 37.27,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T21",
+      "type": "comprehension",
+      "difficulty": "moyen",
+      "question": "Quelles sont toutes les tâches de maintenance préventive quotidiennes ?",
+      "answer": "<thinking>\nL'utilisateur demande la liste complète des **tâches de maintenance préventive quotidiennes** pour un compresseur Jenny.\n\nAnalyse des résultats :\n1. **Aucun document indexé** : Le wiki retourne une synthèse vide (`overview.md`) indiquant qu'aucun document n'a été ingéré pour ce projet. Le",
+      "score": {
+        "recall": 0.14285714285714285,
+        "found": [
+          "huile"
+        ],
+        "missing": [
+          "purge",
+          "condensat",
+          "drain",
+          "oil",
+          "bruit",
+          "noise"
+        ],
+        "passed": false
+      },
+      "elapsed": 26.92,
+      "iterations": 2,
+      "error": null
+    },
+    {
+      "id": "T22",
+      "type": "comprehension",
+      "difficulty": "moyen",
+      "question": "Quelles précautions électriques faut-il respecter pour l'installation ?",
+      "answer": "<thinking>\nL'utilisateur demande les **précautions électriques** à respecter pour l'installation d'un compresseur Jenny. Voici ce que j'ai trouvé :\n\n### Analyse des résultats :\n1. **Sources wiki** :\n   - Aucune procédure directe sur les précautions électriques, mais des synthèses sur d'autres sujets",
+      "score": {
+        "recall": 0.6666666666666666,
+        "found": [
+          "circuit dédié",
+          "mise à la terre",
+          "ground",
+          "fil"
+        ],
+        "missing": [
+          "dedicated",
+          "wire"
+        ],
+        "passed": true
+      },
+      "elapsed": 66.49,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T23",
+      "type": "comprehension",
+      "difficulty": "difficile",
+      "question": "Quelles sont les causes possibles si le compresseur ne monte pas en pression ?",
+      "answer": "<thinking>\nL'utilisateur demande les **causes possibles** pour un compresseur Jenny qui **ne monte pas en pression**. Voici l'analyse des résultats obtenus :\n\n1. **Recherche dans le wiki** :\n   - Aucun résultat direct sur les causes d'un compresseur qui ne monte pas en pression. Les résultats retour",
+      "score": {
+        "recall": 0.5,
+        "found": [
+          "fuite",
+          "clapet",
+          "filtre"
+        ],
+        "missing": [
+          "leak",
+          "valve",
+          "filter"
+        ],
+        "passed": true
+      },
+      "elapsed": 47.4,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T24",
+      "type": "comprehension",
+      "difficulty": "moyen",
+      "question": "Quelles sont les règles de sécurité pour ne pas abîmer les tuyaux et raccords ?",
+      "answer": "Pour vous fournir des règles de sécurité précises, pourriez-vous préciser :",
+      "score": {
+        "recall": 0.0,
+        "found": [],
+        "missing": [
+          "inspecter",
+          "inspect",
+          "usé",
+          "worn",
+          "remplacer",
+          "replace"
+        ],
+        "passed": false
+      },
+      "elapsed": 16.72,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T25",
+      "type": "comprehension",
+      "difficulty": "facile",
+      "question": "Quelle est la durée de garantie du compresseur Jenny ?",
+      "answer": "<thinking>\nL'utilisateur demande la durée de garantie du compresseur Jenny.\n\n1. **Recherche dans le wiki** : Aucune information pertinente trouvée dans les résultats du wiki. Les pages retournées concernent des procédures de maintenance ou des schémas, mais pas la garantie.\n\n2. **Recherche dans les ",
+      "score": {
+        "recall": 1.0,
+        "found": [
+          "1 an",
+          "one year",
+          "garantie",
+          "warranty"
+        ],
+        "missing": [],
+        "passed": true
+      },
+      "elapsed": 26.01,
+      "iterations": 2,
+      "error": null
+    },
+    {
+      "id": "T26",
+      "type": "comprehension",
+      "difficulty": "facile",
+      "question": "Pourquoi ne faut-il pas utiliser l'air comprimé pour respirer ?",
+      "answer": "<thinking>\nLes recherches dans le **wiki** et les **chunks** n'ont retourné **aucun résultat pertinent** concernant les risques liés à l'utilisation de l'air comprimé pour la respiration. Voici ce que je constate :\n\n1. **Aucun document indexé** : Le wiki indique qu'aucun document n'a été ingéré pour",
+      "score": {
+        "recall": 0.8,
+        "found": [
+          "respirer",
+          "sécurité",
+          "safety",
+          "contamination"
+        ],
+        "missing": [
+          "breathing"
+        ],
+        "passed": true
+      },
+      "elapsed": 58.75,
+      "iterations": 2,
+      "error": null
+    },
+    {
+      "id": "T27",
+      "type": "comprehension",
+      "difficulty": "difficile",
+      "question": "Quelles sont les conditions à respecter dans les zones humides (humid areas) ?",
+      "answer": "Votre question concerne-t-elle les zones humides en lien avec :",
+      "score": {
+        "recall": 0.3333333333333333,
+        "found": [
+          "humid",
+          "humide"
+        ],
+        "missing": [
+          "condensat",
+          "sludge",
+          "lubrifiant",
+          "lubricant"
+        ],
+        "passed": false
+      },
+      "elapsed": 14.88,
+      "iterations": 2,
+      "error": null
+    },
+    {
+      "id": "T28",
+      "type": "comprehension",
+      "difficulty": "moyen",
+      "question": "Quelles informations faut-il avoir pour appeler le service après-vente Jenny ?",
+      "answer": "<thinking>\nL'utilisateur demande les informations nécessaires pour appeler le **service après-vente Jenny**. Les recherches dans le wiki et la mémoire n'ont pas retourné de résultats directs sur ce sujet précis.\n\nCependant, les skills chargés automatiquement contiennent des informations pertinentes ",
+      "score": {
+        "recall": 0.5,
+        "found": [
+          "modèle",
+          "numéro de série"
+        ],
+        "missing": [
+          "model number",
+          "serial"
+        ],
+        "passed": true
+      },
+      "elapsed": 38.44,
+      "iterations": 2,
+      "error": null
+    },
+    {
+      "id": "T29",
+      "type": "comprehension",
+      "difficulty": "moyen",
+      "question": "Quelle est la fréquence de maintenance annuelle recommandée ?",
+      "answer": "Aucun document n'a été indexé pour ce projet concernant la fréquence de maintenance annuelle des compresseurs Jenny. Souhaitez-vous :",
+      "score": {
+        "recall": 0.125,
+        "found": [
+          "annuel"
+        ],
+        "missing": [
+          "annual",
+          "200",
+          "heure",
+          "courroie",
+          "belt",
+          "huile",
+          "oil"
+        ],
+        "passed": false
+      },
+      "elapsed": 15.53,
+      "iterations": 3,
+      "error": null
+    },
+    {
+      "id": "T30",
+      "type": "comprehension",
+      "difficulty": "moyen",
+      "question": "Quelles sont les précautions à respecter avant toute intervention de maintenance ?",
+      "answer": "<thinking>\nLes résultats des recherches dans le wiki montrent qu'aucun document n'a été ingéré pour ce projet (cf. \"overview\" et absence de résultats pertinents pour les précautions générales de maintenance). Cependant, les skills chargés automatiquement contiennent des informations détaillées sur l",
+      "score": {
+        "recall": 0.2857142857142857,
+        "found": [
+          "refroidir",
+          "pression"
+        ],
+        "missing": [
+          "OFF",
+          "déconnecter",
+          "disconnect",
+          "cool",
+          "pressure"
+        ],
+        "passed": false
+      },
+      "elapsed": 68.83,
+      "iterations": 2,
+      "error": null
+    }
+  ]
+}

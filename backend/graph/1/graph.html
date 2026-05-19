@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Machine Wiki — Graphe Projet 1</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: #eee; }
+  #header { padding: 12px 20px; background: #111; border-bottom: 1px solid #333;
+             display: flex; align-items: center; gap: 16px; }
+  #header h1 { font-size: 16px; font-weight: 600; color: #fff; }
+  #stats { font-size: 12px; color: #888; }
+  #legend { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  #container { width: 100%; height: calc(100vh - 50px); }
+  #mynetwork { width: 100%; height: 100%; }
+  #tooltip { position: fixed; background: #222; border: 1px solid #444; border-radius: 4px;
+              padding: 10px 14px; font-size: 12px; max-width: 280px; z-index: 100;
+              display: none; pointer-events: none; }
+  #tooltip .t-title { font-weight: 600; color: #fff; margin-bottom: 4px; }
+  #tooltip .t-type { color: #888; font-size: 11px; margin-bottom: 6px; }
+  #tooltip .t-preview { color: #ccc; line-height: 1.4; }
+  #controls { position: fixed; bottom: 16px; right: 16px; display: flex; gap: 8px; }
+  .ctrl-btn { background: #333; border: 1px solid #555; color: #eee; padding: 6px 12px;
+               border-radius: 3px; cursor: pointer; font-size: 12px; }
+  .ctrl-btn:hover { background: #444; }
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Machine Wiki — Knowledge Graph</h1>
+  <span id="stats">3 nœuds · 3 liens</span>
+  <div id="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4CAF50"></div>Source</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2196F3"></div>Machine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FF9800"></div>Entité</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9C27B0"></div>Concept</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#00BCD4"></div>Synthèse</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FF5722; border-radius:0"></div>Inféré</div>
+  </div>
+</div>
+<div id="container"><div id="mynetwork"></div></div>
+<div id="tooltip"><div class="t-title" id="tt-title"></div><div class="t-type" id="tt-type"></div><div class="t-preview" id="tt-preview"></div></div>
+<div id="controls">
+  <button class="ctrl-btn" onclick="network.fit()">Recentrer</button>
+  <button class="ctrl-btn" onclick="togglePhysics()">Physique</button>
+</div>
+<script>
+const graphData = {"nodes": [{"id": "SCHEMA", "label": "Nom de la machine", "type": "machine", "color": "#2196F3", "path": "wiki/1/SCHEMA.md", "preview": "# Wiki Schema — maintenance industrielle ## Domaine maintenance industrielle"}, {"id": "syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure", "label": "2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure", "type": "unknown", "color": "#9E9E9E", "path": "wiki/1/syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure.md", "preview": "### Procédure de maintenance à **500 heures** — Compresseur Jenny **Aucune procédure spécifique à 500 heures n'est documentée** dans le manuel de référence **[JennyCompressorManual.pdf]**. #### Fréque"}, {"id": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le", "label": "2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le", "type": "unknown", "color": "#9E9E9E", "path": "wiki/1/syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le.md", "preview": "Le couple de serrage des **boulons de culasse** pour le compresseur **Jenny Compressor** est de **6 à 7 livres-pied (ft-lb)**, soit environ **8,1 à 9,5 Newton-mètres (Nm)**. **Source** : [JennyCompres"}], "edges": [{"id": "SCHEMA->syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le:INFERRED", "from": "SCHEMA", "to": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le", "type": "INFERRED", "title": "", "color": "#FF5722", "confidence": 0.85}, {"id": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le->SCHEMA:INFERRED", "from": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le", "to": "SCHEMA", "type": "INFERRED", "title": "", "color": "#FF5722", "confidence": 0.9}, {"id": "syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure->syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le:INFERRED", "from": "syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure", "to": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le", "type": "INFERRED", "title": "", "color": "#FF5722", "confidence": 0.85}], "meta": {"project_id": 1, "built_at": "2026-05-19", "total_nodes": 3, "total_edges": 3, "extracted_edges": 0, "inferred_edges": 3}};
+const nodes = new vis.DataSet(graphData.nodes.map(n => ({
+  id: n.id, label: n.label.length > 25 ? n.label.slice(0,25)+'…' : n.label,
+  color: { background: n.color, border: n.color, highlight: { background: '#fff', border: n.color } },
+  font: { color: '#eee', size: 12 },
+  title: n.preview,
+  shape: n.type === 'machine' ? 'box' : n.type === 'source' ? 'diamond' : 'dot',
+  size: n.type === 'machine' ? 18 : 14,
+  _meta: n,
+})));
+const edges = new vis.DataSet(graphData.edges.map(e => ({
+  id: e.id, from: e.from, to: e.to,
+  color: { color: e.color, opacity: e.type === 'AMBIGUOUS' ? 0.35 : 0.8 },
+  width: e.type === 'EXTRACTED' ? 2 : 1,
+  dashes: e.type === 'AMBIGUOUS',
+  title: e.title || e.type,
+  arrows: { to: { enabled: true, scaleFactor: 0.6 } },
+})));
+const container = document.getElementById('mynetwork');
+const options = {
+  physics: { enabled: true, stabilization: { iterations: 120 },
+    barnesHut: { gravitationalConstant: -8000, springLength: 120, damping: 0.2 } },
+  interaction: { hover: true, tooltipDelay: 100, hideEdgesOnDrag: true },
+};
+const network = new vis.Network(container, { nodes, edges }, options);
+let physicsOn = true;
+function togglePhysics() {
+  physicsOn = !physicsOn;
+  network.setOptions({ physics: { enabled: physicsOn } });
+}
+const tooltip = document.getElementById('tooltip');
+network.on('hoverNode', params => {
+  const n = nodes.get(params.node);
+  if (!n) return;
+  document.getElementById('tt-title').textContent = n._meta.label;
+  document.getElementById('tt-type').textContent = n._meta.type;
+  document.getElementById('tt-preview').textContent = n._meta.preview || '';
+  tooltip.style.display = 'block';
+  tooltip.style.left = (params.event.pageX + 12) + 'px';
+  tooltip.style.top = (params.event.pageY - 20) + 'px';
+});
+network.on('blurNode', () => tooltip.style.display = 'none');
+network.on('stabilizationIterationsDone', () => network.setOptions({ physics: { enabled: false } }));
+</script>
+</body>
+</html>

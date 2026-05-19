@@ -1,0 +1,727 @@
+{
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/SCHEMA.md": {
+    "hash": "be0f8f34911310b2",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "détaille les réglages de pression liés aux pressostats, souvent associés aux systèmes de régulation mentionnés dans les tags",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+        "type": "INFERRED",
+        "relationship": "aborde les régulateurs de pression et soupapes pilotes, systèmes de régulation critiques pour les équipements industriels",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "décrit les procédures de test pour les soupapes de sécurité, souvent liées aux compresseurs et systèmes pneumatiques",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "mentionne les compresseurs et les procédures de maintenance liées à l'huile, un aspect clé de la maintenance préventive",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "traite des exigences de ventilation pour les compresseurs, souvent liées aux systèmes pneumatiques et électriques",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "aborde les différentiels de pression des soupapes pilotes, directement liés aux systèmes de régulation et aux compresseurs",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+        "type": "INFERRED",
+        "relationship": "détaille les recommandations d'huile synthétique pour les compresseurs, un aspect technique de la maintenance industrielle",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "décrit les pressions de coupure des soupapes pilotes, essentielles pour les systèmes de régulation et les compresseurs",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote.md": {
+    "hash": "0aef94cdd12040b4",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression est mentionné comme non concerné par le réglage de la pression de coupure, mais il est lié au même composant (soupape pilote).",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Cette page est directement liée à la pression de coupure du pressostat pilote, un réglage décrit dans la page analysée.",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "La soupape de sécurité est un composant lié au système de pression du compresseur, similaire à la soupape pilote mentionnée.",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "AMBIGUOUS",
+        "relationship": "La procédure de sécurité mentionne de vérifier le niveau d'huile avant intervention, ce qui implique une relation avec les procédures de maintenance générale du compresseur.",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur.md": {
+    "hash": "faf0ebb65ee57d7b",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "La procédure mentionne la pression de coupure (*cut-out pressure*) comme paramètre clé du régulateur, suggérant une relation avec le réglage du pressostat pilote.",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "La page définit la pression de coupure comme paramètre du régulateur, impliquant une relation avec les valeurs de réglage.",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "La procédure mentionne le différentiel de pression comme paramètre ajustable, suggérant une relation avec les spécifications techniques.",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "AMBIGUOUS",
+        "relationship": "La procédure de réglage de la soupape pilote pourrait nécessiter des vérifications de sécurité, suggérant une relation avec les tests de soupapes.",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre.md": {
+    "hash": "12d2199e0d51eac2",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "La soupape de sécurité est liée au pressostat, qui peut nécessiter un ajustement de pression de coupure.",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+        "type": "INFERRED",
+        "relationship": "La soupape de sécurité peut être associée à un régulateur de pression ou une soupape pilote nécessitant un ajustement.",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "La vérification de la soupape de sécurité peut impliquer des conditions de ventilation autour du compresseur pour éviter les risques.",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Le test de la soupape de sécurité peut nécessiter la connaissance du différentiel de pression de la soupape pilote.",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "La pression de coupure de la soupape pilote est un paramètre critique pour le test de la soupape de sécurité.",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny.md": {
+    "hash": "db12f4c2860b63d0",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+        "type": "INFERRED",
+        "relationship": "Type d'huile recommandé pour le compresseur Jenny",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "Sécurité et maintenance des composants critiques du compresseur",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "Conditions environnementales de fonctionnement du compresseur",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress.md": {
+    "hash": "691668b18685081e",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "Maintenance liée à la sécurité et à la surchauffe du compresseur",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "Maintenance de l'huile pour éviter la surchauffe et l'usure prématurée",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+        "type": "INFERRED",
+        "relationship": "Type d'huile recommandé pour réduire la consommation excessive d'huile et les risques de surchauffe",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "Réglage de la pression pour éviter les risques de surchauffe liés à un mauvais fonctionnement",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Contrôle de la pression pour garantir un flux d'air suffisant et éviter la surchauffe",
+        "confidence": 0.7
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Réglage de la pression pour éviter les risques de surchauffe et de performances réduites",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote.md": {
+    "hash": "5cca9c839e4ad44b",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression est lié à la pression de coupure (*cut-out pressure*), ajustable via des composants similaires (pressostat pilote).",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+        "type": "INFERRED",
+        "relationship": "Le réglage du différentiel de pression implique des actions sur des composants de régulation (barillet 'C', vis 'C'), similaires au régulateur de pression.",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression est calculé à partir de la pression de coupure (*cut-out pressure*), mentionnée dans cette page.",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "Le battement (*chatter*) de la soupape pilote, lié à un différentiel trop étroit, peut nécessiter des vérifications sur la soupape de sécurité.",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress.md": {
+    "hash": "5fc59d3c2b9bfab1",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "procédure de vérification du niveau d'huile pour le compresseur Jenny",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "maintenance du compresseur Jenny impliquant des contraintes de ventilation",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "AMBIGUOUS",
+        "relationship": "compresseur Jenny avec soupape de sécurité et pressostat piloté",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "AMBIGUOUS",
+        "relationship": "compresseur Jenny nécessitant une soupape de sécurité fonctionnelle",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote.md": {
+    "hash": "6e2412af2293c6f8",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "procédure similaire pour ajuster une pression de coupure sur un équipement pilote",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+        "type": "INFERRED",
+        "relationship": "procédure de réglage d'un régulateur de pression lié à la soupape pilote",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "valeur complémentaire à la pression de coupure (différentiel de pression)",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "vérification de sécurité liée aux soupapes et pressions dans un compresseur",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "maintenance générale du compresseur Jenny, contexte d'utilisation de la soupape pilote",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/raw/jennycompressormanual.md": {
+    "hash": "dae3931c805104c5",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "Section 1 mentionne des instructions de sécurité et de réglage de pression, liées aux pressostats",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+        "type": "INFERRED",
+        "relationship": "Section sur les composants et réglages de pression implique des régulateurs ou soupapes pilotes",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v",
+        "type": "INFERRED",
+        "relationship": "Section 1 ou 2 pourrait aborder les spécifications électriques, incluant la tension d'alimentation",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "Section sur les composants ou maintenance implique l'entretien du filtre à air",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "Section sur la sécurité ou les composants critiques implique les soupapes de sécurité",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "Section sur la maintenance ou les composants implique le niveau d'huile",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+        "type": "INFERRED",
+        "relationship": "Section sur la maintenance ou les composants implique la purge du condensat",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "Section sur la sécurité ou l'installation implique les exigences de ventilation",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+        "type": "INFERRED",
+        "relationship": "Section sur la maintenance ou les composants implique le type d'huile recommandé",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "Section 1 aborde explicitement les instructions de sécurité",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+        "type": "INFERRED",
+        "relationship": "Section sur la maintenance ou les composants implique la température de fonctionnement maximale",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-comment-changer-la-tension-d-alimentation-entre-115v-et-230v.md": {
+    "hash": "f7d187aed41c1289",
+    "edges": [
+      {
+        "to": "raw/jennycompressormanual",
+        "type": "INFERRED",
+        "relationship": "Documentation technique de référence pour la procédure de changement de tension",
+        "confidence": 1.0
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "Procédure de réglage liée aux paramètres électriques du compresseur (pression et tension sont des paramètres interdépendants)",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "Maintenance générale du compresseur nécessitant une vérification des conditions électriques pour la sécurité",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "Règles de sécurité électriques liées à la manipulation de la tension d'alimentation",
+        "confidence": 0.95
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur.md": {
+    "hash": "0495912b17d343b2",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai",
+        "type": "INFERRED",
+        "relationship": "Fréquence recommandée pour le nettoyage ou remplacement du filtre à air",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+        "type": "INFERRED",
+        "relationship": "Fréquence de maintenance du filtre à air",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "Règles de sécurité générales pour l'entretien du compresseur",
+        "confidence": 0.9
+      },
+      {
+        "to": "raw/jennycompressormanual",
+        "type": "INFERRED",
+        "relationship": "Référence au manuel technique pour les spécifications du filtre à air",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "Lien avec la maintenance des composants critiques (filtre et soupape de sécurité)",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "AMBIGUOUS",
+        "relationship": "Maintenance générale du compresseur incluant des éléments critiques comme le filtre",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres.md": {
+    "hash": "a6b911330bbfaa31",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir",
+        "type": "INFERRED",
+        "relationship": "détaille la procédure de purge du condensat mentionnée implicitement",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "liée à la gestion des risques d'explosion par surpression",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "liée à la maintenance préventive pour éviter l'accumulation d'humidité",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "liée à la régulation de pression et prévention des risques d'explosion",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+        "type": "INFERRED",
+        "relationship": "liée à la maintenance générale pour éviter la corrosion",
+        "confidence": 0.7
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "liée aux risques d'explosion et aux bonnes pratiques de maintenance",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour.md": {
+    "hash": "bb6005d80260e3cd",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "Procédure détaillée pour le nettoyage ou remplacement du filtre à air",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+        "type": "INFERRED",
+        "relationship": "Maintenance périodique liée à l'entretien général du compresseur",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "Conditions environnementales influençant la fréquence de nettoyage du filtre",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+        "type": "INFERRED",
+        "relationship": "Indicateurs de performance ou de panne liés à l'encrassement du filtre",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "Sécurité liée à la manipulation du filtre pendant l'entretien",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su.md": {
+    "hash": "7c780c1a4232e58b",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression est lié à la pression de coupure (cut-out pressure) mentionnée dans le réglage de la soupape pilote.",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression dépend directement de la pression de coupure, un concept central dans cette page.",
+        "confidence": 0.9
+      },
+      {
+        "to": "raw/jennycompressormanual",
+        "type": "INFERRED",
+        "relationship": "La page cite explicitement une source externe (manuel JennyCompressorManual.pdf) pour un exemple concret, suggérant une relation avec le contenu technique du manuel.",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quelle-fr-quence-faut-il-remplacer-ou-nettoyer-le-filtre-ai.md": {
+    "hash": "b07734e978cc6ddb",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "Contient des instructions détaillées complémentaires pour le nettoyage/remplacement du filtre à air",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-fr-quence-de-remplacement-ou-de-nettoyage-du-filtre-air-pour",
+        "type": "INFERRED",
+        "relationship": "Contient des informations redondantes ou similaires sur la fréquence de maintenance du filtre à air",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "L'obstruction du filtre à air peut impacter la pression du système et nécessiter un ajustement de la soupape pilote",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "Un filtre à air encrassé peut réduire l'efficacité de la ventilation et nécessiter un dégagement accru",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+        "type": "INFERRED",
+        "relationship": "Un filtre à air obstrué peut entraîner une surchauffe du compresseur",
+        "confidence": 0.7
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "L'utilisation d'un filtre endommagé peut violer les règles de sécurité en laissant passer des particules dangereuses",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu.md": {
+    "hash": "6ba67458b9698e52",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "La pression nominale des composants doit être compatible avec la pression de coupure du pressostat pilote pour éviter les risques de surpression.",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-le-r-gulateur-de-pression-soupape-pilote-sur",
+        "type": "INFERRED",
+        "relationship": "Le réglage du régulateur de pression ou de la soupape pilote influence directement la pression maximale de fonctionnement, donc la compatibilité des tuyaux et raccords.",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-quelle-est-la-pression-de-coupure-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "La pression de coupure de la soupape pilote détermine la pression maximale admissible pour les tuyaux et raccords.",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote-su",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression de la soupape pilote affecte la stabilité de la pression dans le système et donc les contraintes sur les tuyaux et raccords.",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-diff-rentiel-de-pression-de-la-soupape-pilote",
+        "type": "INFERRED",
+        "relationship": "Le différentiel de pression de la soupape pilote influence la pression maximale supportable par les tuyaux et raccords.",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "La soupape de sécurité doit être testée pour s'assurer qu'elle limite correctement la pression et protège les tuyaux et raccords contre les surpressions.",
+        "confidence": 0.8
+      },
+      {
+        "to": "raw/jennycompressormanual",
+        "type": "INFERRED",
+        "relationship": "Le manuel technique du compresseur Jenny contient des spécifications techniques (pressions nominales, types de raccords) essentielles pour respecter les règles de sécurité des tuyaux.",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga",
+        "type": "INFERRED",
+        "relationship": "La température maximale admissible du compresseur peut influencer la durabilité des tuyaux et raccords, notamment en cas de surchauffe.",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-quelles-sont-les-tapes-pour-purger-le-condensat-du-r-servoir.md": {
+    "hash": "61b637109635621c",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "La purge du condensat est liée à la vérification de la soupape de sécurité pour éviter les risques d'explosion.",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "Le condensat peut obstruer le filtre air, nécessitant un nettoyage ou remplacement régulier.",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "Le condensat peut contenir de l'huile, nécessitant une vérification du niveau d'huile après purge.",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+        "type": "INFERRED",
+        "relationship": "Cette page est directement liée à la fréquence de purge du condensat, complémentaire à la procédure.",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-quelles-sont-les-r-gles-de-s-curit-pour-ne-pas-ab-mer-les-tu",
+        "type": "INFERRED",
+        "relationship": "La procédure de purge implique des règles de sécurité spécifiques pour éviter les accidents.",
+        "confidence": 0.9
+      },
+      {
+        "to": "raw/jennycompressormanual",
+        "type": "INFERRED",
+        "relationship": "Le manuel du compresseur Jenny contient des informations techniques ou des avertissements spécifiques liés à la purge du condensat.",
+        "confidence": 0.8
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/7/syntheses/2026-05-19-temp-rature-maximale-du-compresseur-jenny-avant-arr-t-obliga.md": {
+    "hash": "1d47c9fcecf299e9",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quel-type-d-huile-synth-tique-est-recommand-pour-le-compress",
+        "type": "INFERRED",
+        "relationship": "L'huile recommandée pour éviter la surchauffe du compresseur Jenny est Jenny Ultimate Blue.",
+        "confidence": 0.95
+      },
+      {
+        "to": "syntheses/2026-05-19-quel-d-gagement-de-ventilation-est-requis-autour-du-compress",
+        "type": "INFERRED",
+        "relationship": "La recommandation de dégagement de 3 pieds (0,9 mètre) autour du compresseur pour éviter la surchauffe est liée à la ventilation.",
+        "confidence": 0.9
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-et-tester-la-soupape-de-s-curit-d-un-compre",
+        "type": "INFERRED",
+        "relationship": "La soupape de sécurité est mentionnée comme mécanisme de sécurité, mais sans arrêt automatique basé sur la température.",
+        "confidence": 0.85
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-ajuster-la-pression-de-coupure-du-pressostat-pilote",
+        "type": "INFERRED",
+        "relationship": "Le pressostat est un mécanisme de sécurité basé sur la pression, distinct de la température.",
+        "confidence": 0.8
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-nettoyer-ou-remplacer-le-filtre-air-d-un-compresseur",
+        "type": "INFERRED",
+        "relationship": "Le filtre à air peut influencer la température du compresseur en cas d'encrassement.",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-comment-v-rifier-le-niveau-d-huile-du-compresseur-jenny",
+        "type": "INFERRED",
+        "relationship": "Le niveau d'huile est crucial pour la lubrification et la dissipation thermique du compresseur.",
+        "confidence": 0.75
+      },
+      {
+        "to": "syntheses/2026-05-19-fr-quence-de-purge-du-condensat-du-r-servoir-pour-un-compres",
+        "type": "AMBIGUOUS",
+        "relationship": "La purge du condensat peut être liée à la maintenance thermique du compresseur.",
+        "confidence": 0.7
+      }
+    ]
+  }
+}

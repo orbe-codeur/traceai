@@ -1,0 +1,35 @@
+{
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/1/SCHEMA.md": {
+    "hash": "be0f8f34911310b2",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+        "type": "INFERRED",
+        "relationship": "contient des informations techniques liées aux procédures de maintenance industrielle, potentiellement référencées dans les conventions de documentation",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/1/syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le.md": {
+    "hash": "3634674aeca9caee",
+    "edges": [
+      {
+        "to": "SCHEMA",
+        "type": "INFERRED",
+        "relationship": "documentation technique associée à la machine Jenny Compressor",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "/mnt/c/Users/abdel/Desktop/Station Y/traceai/backend/wiki/1/syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure.md": {
+    "hash": "472c6e31b5870e0a",
+    "edges": [
+      {
+        "to": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+        "type": "INFERRED",
+        "relationship": "Vérification du couple de serrage des boulons (mentionné dans la maintenance hebdomadaire) pour la révision générale à 500 heures",
+        "confidence": 0.85
+      }
+    ]
+  }
+}

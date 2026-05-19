@@ -1,0 +1,65 @@
+{
+  "nodes": [
+    {
+      "id": "SCHEMA",
+      "label": "Nom de la machine",
+      "type": "machine",
+      "color": "#2196F3",
+      "path": "wiki/1/SCHEMA.md",
+      "preview": "# Wiki Schema — maintenance industrielle ## Domaine maintenance industrielle"
+    },
+    {
+      "id": "syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure",
+      "label": "2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/1/syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure.md",
+      "preview": "### Procédure de maintenance à **500 heures** — Compresseur Jenny **Aucune procédure spécifique à 500 heures n'est documentée** dans le manuel de référence **[JennyCompressorManual.pdf]**. #### Fréque"
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+      "label": "2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+      "type": "unknown",
+      "color": "#9E9E9E",
+      "path": "wiki/1/syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le.md",
+      "preview": "Le couple de serrage des **boulons de culasse** pour le compresseur **Jenny Compressor** est de **6 à 7 livres-pied (ft-lb)**, soit environ **8,1 à 9,5 Newton-mètres (Nm)**. **Source** : [JennyCompres"
+    }
+  ],
+  "edges": [
+    {
+      "id": "SCHEMA->syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le:INFERRED",
+      "from": "SCHEMA",
+      "to": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    },
+    {
+      "id": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le->SCHEMA:INFERRED",
+      "from": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+      "to": "SCHEMA",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.9
+    },
+    {
+      "id": "syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure->syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le:INFERRED",
+      "from": "syntheses/2026-05-19-proc-dure-de-maintenance-pour-le-compresseur-jenny-500-heure",
+      "to": "syntheses/2026-05-19-quel-est-le-couple-de-serrage-des-boulons-de-culasse-pour-le",
+      "type": "INFERRED",
+      "title": "",
+      "color": "#FF5722",
+      "confidence": 0.85
+    }
+  ],
+  "meta": {
+    "project_id": 1,
+    "built_at": "2026-05-19",
+    "total_nodes": 3,
+    "total_edges": 3,
+    "extracted_edges": 0,
+    "inferred_edges": 3
+  }
+}

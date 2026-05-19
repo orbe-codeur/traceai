@@ -37,10 +37,29 @@ def _md_output_path(project_id: int, filename: str) -> Path:
 
 def _parse_pdf(path: Path, project_id: int) -> tuple[str, Path | None]:
     """
-    Convertit un PDF en markdown via Docling.
-    Sauvegarde le .md dans wiki/{project_id}/raw/.
-    Retourne (markdown_content, md_path).
+    Convertit un PDF en markdown.
+    Stratégie : Docling pour la structure + PyMuPDF comme filet de sécurité.
+
+    Pour chaque page, si Docling a moins de 60% du texte de PyMuPDF,
+    on ajoute le texte PyMuPDF brut en supplément → 0 perte de données.
     """
+    import fitz
+
+    # 1. Extraire le texte brut PyMuPDF page par page (référence complète)
+    try:
+        fitz_doc = fitz.open(str(path))
+        pymupdf_pages: dict[int, str] = {}
+        for i, page in enumerate(fitz_doc):
+            text = page.get_text().strip()
+            if text:
+                pymupdf_pages[i + 1] = text
+        fitz_doc.close()
+    except Exception as e:
+        logger.warning("[parser] PyMuPDF échoué sur %s : %s", path.name, e)
+        pymupdf_pages = {}
+
+    # 2. Essai Docling pour la structure
+    docling_md = ""
     try:
         from docling.document_converter import DocumentConverter
         from docling.datamodel.pipeline_options import PdfPipelineOptions
@@ -50,24 +69,56 @@ def _parse_pdf(path: Path, project_id: int) -> tuple[str, Path | None]:
         options.do_table_structure = True
         options.table_structure_options.do_cell_matching = True
 
-        converter = DocumentConverter()
-        result = converter.convert(str(path))
-        doc = result.document
-
-        # Export markdown structuré avec headers et tableaux
-        md_text = doc.export_to_markdown()
-
-        if not md_text or len(md_text) < 100:
-            raise ValueError("Docling a produit un markdown vide")
-
-        md_path = _md_output_path(project_id, path.name)
-        md_path.write_text(md_text, encoding="utf-8")
-        logger.info("[parser] %s → %s (%d chars)", path.name, md_path.name, len(md_text))
-        return md_text, md_path
-
+        result = DocumentConverter().convert(str(path))
+        docling_md = result.document.export_to_markdown()
     except Exception as e:
-        logger.warning("[parser] Docling échoué sur %s : %s — fallback PyMuPDF", path.name, e)
-        return _parse_pdf_fallback(path, project_id)
+        logger.warning("[parser] Docling échoué sur %s : %s", path.name, e)
+
+    # 3. Construire le .md final avec filet de sécurité
+    md_sections = []
+
+    if docling_md and len(docling_md) > 100:
+        md_sections.append(docling_md)
+        # Vérifier quelles pages PyMuPDF ont du contenu absent de Docling
+        missed_pages = []
+        for page_num, page_text in pymupdf_pages.items():
+            # Prendre les mots significatifs de PyMuPDF (> 4 chars)
+            words = [w for w in page_text.lower().split() if len(w) > 4]
+            if not words:
+                continue
+            # Combien sont présents dans le markdown Docling ?
+            present = sum(1 for w in words if w in docling_md.lower())
+            coverage = present / len(words) if words else 1.0
+            if coverage < 0.60:  # Docling a moins de 60% du texte de cette page
+                missed_pages.append((page_num, page_text, coverage))
+
+        if missed_pages:
+            supplement = ["\n\n---\n## Supplément — Contenu non capturé par Docling\n"]
+            for page_num, text, cov in missed_pages:
+                logger.info("[parser] p%d couverture Docling %.0f%% — ajout texte PyMuPDF",
+                            page_num, cov * 100)
+                supplement.append(f"\n### Page {page_num} (couverture Docling {cov:.0%})\n\n{text}")
+            md_sections.append("\n".join(supplement))
+    elif pymupdf_pages:
+        # Docling a complètement échoué — fallback PyMuPDF pur
+        logger.warning("[parser] Docling vide pour %s — fallback PyMuPDF complet", path.name)
+        lines = []
+        for page_num, text in sorted(pymupdf_pages.items()):
+            lines.append(f"\n## Page {page_num}\n\n{text}")
+        md_sections.append("\n".join(lines))
+    else:
+        return "", None
+
+    md_text = "\n".join(md_sections)
+    md_path = _md_output_path(project_id, path.name)
+    md_path.write_text(md_text, encoding="utf-8")
+
+    missed_count = len([p for p in pymupdf_pages
+                        if docling_md and sum(1 for w in [w for w in pymupdf_pages[p].lower().split() if len(w) > 4]
+                        if w in docling_md.lower()) / max(1, len([w for w in pymupdf_pages[p].lower().split() if len(w) > 4])) < 0.60])
+    logger.info("[parser] %s → %s (%d chars, %d pages supplémentées)",
+                path.name, md_path.name, len(md_text), missed_count)
+    return md_text, md_path
 
 
 def _parse_pdf_fallback(path: Path, project_id: int) -> tuple[str, Path | None]:
