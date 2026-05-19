@@ -1,245 +1,191 @@
 """
 Agent 3 — Parser
-Gère tous les formats : PDF texte, PDF scanné (OCR), DOCX, XLSX, images, URLs.
+Convertit tous les formats en fichiers .md sur disque.
+
+Pipeline :
+  PDF  → Docling → wiki/{project_id}/raw/{stem}.md
+  DOCX → python-docx → texte markdown basique
+  XLSX → pandas → markdown tabulaire
+  URL  → BeautifulSoup → texte propre
+
+Le chunker lit ensuite les .md pour découper.
 """
-import io
 import logging
 import sqlite3
 from pathlib import Path
-from typing import Optional
 
-import fitz  # PyMuPDF
 import httpx
 
 from .utils import update_agent, update_batch_files, append_log
 
 logger = logging.getLogger(__name__)
 
-# Seuil : si moins de 100 chars/page → PDF scanné
-SCAN_THRESHOLD = 100
-# Seuil : si ratio image > 50% de la surface → page schéma (vision)
-IMAGE_RATIO_THRESHOLD = 0.5
+# Dossier des fichiers .md intermédiaires
+WIKI_BASE = Path(__file__).parent.parent / "wiki"
 
 
-def _parse_pdf_docling(path: Path) -> tuple[str, list[dict]]:
+def _md_output_path(project_id: int, filename: str) -> Path:
+    out_dir = WIKI_BASE / str(project_id) / "raw"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stem = Path(filename).stem.lower().replace(" ", "-")
+    return out_dir / f"{stem}.md"
+
+
+# ---------------------------------------------------------------------------
+# PDF — Docling
+# ---------------------------------------------------------------------------
+
+def _parse_pdf(path: Path, project_id: int) -> tuple[str, Path | None]:
     """
-    Parse un PDF avec Docling — préserve sections, tableaux, hiérarchie.
-    Retourne (texte_markdown, sections_structurées).
-    sections = [{title, content, level, page, has_table, table_md}]
+    Convertit un PDF en markdown via Docling.
+    Sauvegarde le .md dans wiki/{project_id}/raw/.
+    Retourne (markdown_content, md_path).
     """
-    from docling.document_converter import DocumentConverter
-    from docling.datamodel.base_models import InputFormat
-    from docling.datamodel.pipeline_options import PdfPipelineOptions
-
-    options = PdfPipelineOptions()
-    options.do_ocr = False          # OCR activé séparément si besoin
-    options.do_table_structure = True
-    options.table_structure_options.do_cell_matching = True
-
-    converter = DocumentConverter()
-    result = converter.convert(str(path))
-    doc = result.document
-
-    sections = []
-    # Itérer les éléments du document dans l'ordre
-    for item, level in doc.iterate_items():
-        from docling_core.types.doc import SectionHeaderItem, TextItem, TableItem
-
-        if isinstance(item, SectionHeaderItem):
-            sections.append({
-                "title":     item.text,
-                "content":   "",
-                "level":     item.level,
-                "page":      item.prov[0].page_no if item.prov else 0,
-                "has_table": False,
-                "table_md":  None,
-            })
-        elif isinstance(item, TableItem):
-            table_md = item.export_to_markdown(doc)
-            entry = {
-                "title":     f"Tableau — {sections[-1]['title'] if sections else 'Table'}",
-                "content":   table_md,
-                "level":     (sections[-1]["level"] + 1) if sections else 3,
-                "page":      item.prov[0].page_no if item.prov else 0,
-                "has_table": True,
-                "table_md":  table_md,
-            }
-            sections.append(entry)
-        elif isinstance(item, TextItem) and item.text.strip():
-            if sections:
-                sections[-1]["content"] += "\n" + item.text
-            else:
-                sections.append({
-                    "title":     "",
-                    "content":   item.text,
-                    "level":     1,
-                    "page":      item.prov[0].page_no if item.prov else 0,
-                    "has_table": False,
-                    "table_md":  None,
-                })
-
-    # Texte markdown complet (fallback chunker)
-    full_md = doc.export_to_markdown()
-    return full_md, sections
-
-
-def _parse_pdf(path: Path, project_id: int, doc_id: int,
-               conn: sqlite3.Connection) -> tuple[str, list[dict]]:
-    """
-    Parse un PDF. Essaie Docling d'abord (structure), fallback PyMuPDF.
-    Retourne (texte, sections_structurées).
-    sections vides = le chunker utilisera le fallback regex.
-    """
-    # Tentative Docling
     try:
-        text_md, sections = _parse_pdf_docling(path)
-        if text_md and len(text_md) > 200:
-            logger.info(f"[parser] {path.name} — Docling OK "
-                        f"({len(sections)} sections)")
-            return text_md, sections
+        from docling.document_converter import DocumentConverter
+        from docling.datamodel.pipeline_options import PdfPipelineOptions
+
+        options = PdfPipelineOptions()
+        options.do_ocr = False
+        options.do_table_structure = True
+        options.table_structure_options.do_cell_matching = True
+
+        converter = DocumentConverter()
+        result = converter.convert(str(path))
+        doc = result.document
+
+        # Export markdown structuré avec headers et tableaux
+        md_text = doc.export_to_markdown()
+
+        if not md_text or len(md_text) < 100:
+            raise ValueError("Docling a produit un markdown vide")
+
+        md_path = _md_output_path(project_id, path.name)
+        md_path.write_text(md_text, encoding="utf-8")
+        logger.info("[parser] %s → %s (%d chars)", path.name, md_path.name, len(md_text))
+        return md_text, md_path
+
     except Exception as e:
-        logger.warning(f"[parser] Docling échoué sur {path.name}: {e} — fallback PyMuPDF")
+        logger.warning("[parser] Docling échoué sur %s : %s — fallback PyMuPDF", path.name, e)
+        return _parse_pdf_fallback(path, project_id)
 
-    # Fallback PyMuPDF
+
+def _parse_pdf_fallback(path: Path, project_id: int) -> tuple[str, Path | None]:
+    """Fallback PyMuPDF si Docling échoue — extrait le texte brut."""
     try:
+        import fitz
         doc = fitz.open(str(path))
+        lines = []
+        for i, page in enumerate(doc):
+            text = page.get_text().strip()
+            if text:
+                lines.append(f"\n## Page {i + 1}\n\n{text}")
+        md_text = "\n".join(lines)
+
+        md_path = _md_output_path(project_id, path.name)
+        md_path.write_text(md_text, encoding="utf-8")
+        return md_text, md_path
     except Exception as e:
-        logger.error(f"[parser] Impossible d'ouvrir {path.name}: {e}")
-        return "", []
-
-    parts = []
-    total_chars = 0
-    total_pages = len(doc)
-
-    for i, page in enumerate(doc):
-        text = page.get_text().strip()
-        total_chars += len(text)
-        parts.append(f"--- PAGE {i + 1} ---\n{text}" if text else f"--- PAGE {i + 1} ---")
-
-    avg_chars = total_chars / max(total_pages, 1)
-
-    if avg_chars < SCAN_THRESHOLD:
-        logger.info(f"[parser] {path.name} scanné (avg {avg_chars:.0f} chars/p) → OCR")
-        conn.execute("UPDATE documents SET is_scanned=1 WHERE id=?", (doc_id,))
-        conn.commit()
-        ocr_text = _ocr_pdf(path, doc)
-        if ocr_text:
-            return ocr_text, []
-
-    return "\n\n".join(parts), []
+        logger.error("[parser] Fallback PyMuPDF échoué : %s", e)
+        return "", None
 
 
-def _ocr_pdf(path: Path, doc: fitz.Document) -> str:
-    """OCR d'un PDF scanné via Surya (fallback : texte vide + avertissement)."""
-    try:
-        from surya.ocr import run_ocr
-        from surya.model.detection.model import load_model as load_det
-        from surya.model.recognition.model import load_model as load_rec
-        from surya.model.detection.processor import load_processor as load_det_proc
-        from surya.model.recognition.processor import load_processor as load_rec_proc
+# ---------------------------------------------------------------------------
+# DOCX
+# ---------------------------------------------------------------------------
 
-        det_model, det_proc = load_det(), load_det_proc()
-        rec_model, rec_proc = load_rec(), load_rec_proc()
-
-        images = [page.get_pixmap(dpi=150).tobytes("png") for page in doc]
-        langs = [["fr", "en"]] * len(images)
-        results = run_ocr(images, langs, det_model, det_proc, rec_model, rec_proc)
-        parts = []
-        for i, r in enumerate(results):
-            text = " ".join(line.text for block in r.text_lines for line in [block])
-            parts.append(f"--- PAGE {i + 1} ---\n{text}")
-        return "\n\n".join(parts)
-    except ImportError:
-        logger.warning("[parser] Surya OCR non installé — PDF scanné ignoré")
-        return ""
-    except Exception as e:
-        logger.warning(f"[parser] OCR échoué: {e}")
-        return ""
-
-
-def _parse_docx(path: Path) -> str:
+def _parse_docx(path: Path, project_id: int) -> tuple[str, Path | None]:
     try:
         from docx import Document
         doc = Document(str(path))
-        parts = []
+        lines = []
         for para in doc.paragraphs:
-            if para.text.strip():
-                parts.append(para.text.strip())
-        return "\n\n".join(parts)
+            text = para.text.strip()
+            if not text:
+                continue
+            # Détecter les titres via le style
+            style = para.style.name.lower()
+            if "heading 1" in style:
+                lines.append(f"# {text}")
+            elif "heading 2" in style:
+                lines.append(f"## {text}")
+            elif "heading 3" in style:
+                lines.append(f"### {text}")
+            else:
+                lines.append(text)
+
+        md_text = "\n\n".join(lines)
+        md_path = _md_output_path(project_id, path.name)
+        md_path.write_text(md_text, encoding="utf-8")
+        return md_text, md_path
     except ImportError:
         logger.warning("[parser] python-docx non installé")
-        return ""
+        return "", None
     except Exception as e:
-        logger.error(f"[parser] DOCX {path.name}: {e}")
-        return ""
+        logger.error("[parser] DOCX %s : %s", path.name, e)
+        return "", None
 
 
-def _parse_xlsx(path: Path) -> str:
+# ---------------------------------------------------------------------------
+# XLSX / CSV
+# ---------------------------------------------------------------------------
+
+def _parse_xlsx(path: Path, project_id: int) -> tuple[str, Path | None]:
     try:
-        import openpyxl
-        wb = openpyxl.load_workbook(str(path), data_only=True)
-        parts = []
-        for sheet in wb.worksheets:
-            parts.append(f"[Feuille: {sheet.title}]")
-            headers: Optional[list] = None
-            for row in sheet.iter_rows(values_only=True):
-                values = [str(v) if v is not None else "" for v in row]
-                if not any(values):
-                    continue
-                if headers is None:
-                    headers = values
-                    parts.append(" | ".join(headers))
-                else:
-                    parts.append(" | ".join(values))
-        return "\n".join(parts)
-    except ImportError:
-        logger.warning("[parser] openpyxl non installé")
-        return ""
+        import pandas as pd
+        sheets = pd.read_excel(str(path), sheet_name=None) if path.suffix in (".xlsx", ".xls") \
+            else {"data": pd.read_csv(str(path))}
+
+        lines = []
+        for sheet_name, df in sheets.items():
+            lines.append(f"# Feuille : {sheet_name}\n")
+            lines.append(df.fillna("").to_markdown(index=False))
+            lines.append("")
+
+        md_text = "\n".join(lines)
+        md_path = _md_output_path(project_id, path.name)
+        md_path.write_text(md_text, encoding="utf-8")
+        return md_text, md_path
     except Exception as e:
-        logger.error(f"[parser] XLSX {path.name}: {e}")
-        return ""
+        logger.error("[parser] XLSX %s : %s", path.name, e)
+        return "", None
 
 
-def _parse_html_file(path: Path) -> str:
-    """Extrait le texte d'un fichier HTML local."""
+# ---------------------------------------------------------------------------
+# HTML / URL
+# ---------------------------------------------------------------------------
+
+def _parse_html(content: str, project_id: int, name: str) -> tuple[str, Path | None]:
     try:
         from bs4 import BeautifulSoup
-        html = path.read_text(encoding="utf-8", errors="ignore")
-        soup = BeautifulSoup(html, "html.parser")
-        for tag in soup(["script", "style", "nav", "header", "footer", "aside", "svg"]):
+        soup = BeautifulSoup(content, "html.parser")
+        for tag in soup(["script", "style", "nav", "header", "footer", "aside"]):
             tag.decompose()
-        text = soup.get_text(separator="\n", strip=True)
-        lines = [l for l in text.splitlines() if l.strip()]
-        return "\n".join(lines)[:120_000]
-    except ImportError:
-        logger.warning("[parser] beautifulsoup4 non installé")
-        return ""
+        lines = [l for l in soup.get_text(separator="\n").splitlines() if l.strip()]
+        md_text = "\n".join(lines)[:120_000]
+        md_path = _md_output_path(project_id, name)
+        md_path.write_text(md_text, encoding="utf-8")
+        return md_text, md_path
     except Exception as e:
-        logger.error(f"[parser] HTML {path.name}: {e}")
-        return ""
+        logger.error("[parser] HTML %s : %s", name, e)
+        return "", None
 
 
-def _parse_url(url: str) -> str:
+def _parse_url(url: str, project_id: int) -> tuple[str, Path | None]:
     try:
-        from bs4 import BeautifulSoup
         with httpx.Client(timeout=30, follow_redirects=True) as client:
             resp = client.get(url, headers={"User-Agent": "TraceAI/2.0"})
             resp.raise_for_status()
-        soup = BeautifulSoup(resp.text, "html.parser")
-        # Supprimer scripts, styles, nav
-        for tag in soup(["script", "style", "nav", "header", "footer", "aside"]):
-            tag.decompose()
-        text = soup.get_text(separator="\n", strip=True)
-        # Nettoyer lignes vides multiples
-        lines = [l for l in text.splitlines() if l.strip()]
-        return "\n".join(lines)[:20000]
-    except ImportError:
-        logger.warning("[parser] beautifulsoup4 non installé")
-        return ""
+        stem = url.split("/")[-1][:50] or "page"
+        return _parse_html(resp.text, project_id, stem + ".url")
     except Exception as e:
-        logger.error(f"[parser] URL {url}: {e}")
-        return ""
+        logger.error("[parser] URL %s : %s", url, e)
+        return "", None
 
+
+# ---------------------------------------------------------------------------
+# Agent run()
+# ---------------------------------------------------------------------------
 
 def run(
     project_id: int,
@@ -249,24 +195,23 @@ def run(
     urls: list[str] | None = None,
 ) -> list[dict]:
     """
-    Parse tous les fichiers et URLs.
-    Retourne une liste de {doc_id, filename, content, page_count}.
-    Met à jour le statut des documents en base.
+    Parse tous les fichiers → markdown sur disque.
+    Retourne [{doc_id, filename, content, md_path, page_count}].
     """
     update_agent(conn, job_id, "parse", "running", "")
-    append_log(conn, job_id, "info", "parse", f"Démarrage · {len(file_paths)} fichiers + {len(urls or [])} URLs")
+    append_log(conn, job_id, "info", "parse",
+               f"Démarrage · {len(file_paths)} fichiers + {len(urls or [])} URLs")
 
     parsed: list[dict] = []
     errors = 0
     processed = 0
-
-    MAX_CHARS_PER_DOC = 120_000  # ~30K tokens max par document → max ~30 chunks
 
     for i, path in enumerate(file_paths):
         ext = path.suffix.lower()
         size_kb = path.stat().st_size // 1024
         append_log(conn, job_id, "info", "parse",
                    f"[{i+1}/{len(file_paths)}] {path.name} ({size_kb} Ko) — parsing…")
+
         conn.execute(
             "UPDATE documents SET status='parsing' WHERE project_id=? AND filename=?",
             (project_id, path.name),
@@ -274,40 +219,42 @@ def run(
         conn.commit()
 
         row = conn.execute(
-            "SELECT id, page_count FROM documents WHERE project_id=? AND filename=?",
+            "SELECT id FROM documents WHERE project_id=? AND filename=?",
             (project_id, path.name),
         ).fetchone()
         doc_id = row[0] if row else None
 
         try:
-            sections = []
+            md_path = None
+            page_count = 0
+
             if ext == ".pdf":
-                content, sections = _parse_pdf(path, project_id, doc_id, conn)
+                content, md_path = _parse_pdf(path, project_id)
                 try:
-                    doc = fitz.open(str(path))
-                    page_count = len(doc)
+                    import fitz
+                    page_count = len(fitz.open(str(path)))
                 except Exception:
-                    page_count = 0
+                    pass
+
             elif ext in (".docx", ".doc"):
-                content = _parse_docx(path)
-                page_count = 0
-            elif ext in (".xlsx", ".xls"):
-                content = _parse_xlsx(path)
-                page_count = 0
+                content, md_path = _parse_docx(path, project_id)
+
+            elif ext in (".xlsx", ".xls", ".csv"):
+                content, md_path = _parse_xlsx(path, project_id)
+
             elif ext in (".html", ".htm"):
-                content = _parse_html_file(path)
-                page_count = 0
-            elif ext in (".txt", ".md", ".rst", ".csv"):
+                raw = path.read_text(encoding="utf-8", errors="ignore")
+                content, md_path = _parse_html(raw, project_id, path.name)
+
+            elif ext in (".txt", ".md", ".rst"):
                 content = path.read_text(encoding="utf-8", errors="ignore")[:120_000]
-                page_count = 0
-            elif ext in (".jpg", ".jpeg", ".png", ".gif", ".bmp"):
-                content = f"[Image: {path.name}]"
-                page_count = 1
+                md_path = _md_output_path(project_id, path.name)
+                md_path.write_text(content, encoding="utf-8")
+
             else:
                 append_log(conn, job_id, "warn", "parse",
                            f"{path.name} — format {ext} non supporté (ignoré)")
                 content = ""
-                page_count = 0
 
             conn.execute(
                 "UPDATE documents SET status='parsed', page_count=? WHERE id=?",
@@ -316,28 +263,25 @@ def run(
             conn.commit()
 
             if content:
-                # Limiter la taille pour éviter trop de chunks
-                if len(content) > MAX_CHARS_PER_DOC:
-                    append_log(conn, job_id, "warn", "parse",
-                               f"{path.name} tronqué {len(content)//1000}K→{MAX_CHARS_PER_DOC//1000}K chars (doc trop long)")
-                    content = content[:MAX_CHARS_PER_DOC]
-
                 parsed.append({
-                    "doc_id":    doc_id,
-                    "filename":  path.name,
-                    "content":   content,
-                    "sections":  sections,   # [] si PyMuPDF fallback
+                    "doc_id":     doc_id,
+                    "filename":   path.name,
+                    "content":    content,
+                    "md_path":    md_path,
                     "page_count": page_count,
                     "source_url": None,
                 })
                 processed += 1
+                chars_k = len(content) // 1000
                 append_log(conn, job_id, "ok", "parse",
-                           f"✓ {path.name} — {page_count} pages · {len(content)//1000}K chars")
+                           f"✓ {path.name} — {page_count}p · {chars_k}K chars"
+                           f"{' → ' + md_path.name if md_path else ''}")
             else:
                 errors += 1
                 append_log(conn, job_id, "warn", "parse", f"{path.name} — contenu vide")
+
         except Exception as e:
-            logger.error(f"[parser] {path.name}: {e}")
+            logger.error("[parser] %s : %s", path.name, e)
             append_log(conn, job_id, "err", "parse", f"{path.name} ERREUR : {str(e)[:100]}")
             errors += 1
             if doc_id:
@@ -364,25 +308,19 @@ def run(
         ).fetchone()
         doc_id = row[0] if row else None
 
-        content = _parse_url(url)
+        content, md_path = _parse_url(url, project_id)
         if content:
-            conn.execute(
-                "UPDATE documents SET status='parsed' WHERE id=?", (doc_id,)
-            )
+            conn.execute("UPDATE documents SET status='parsed' WHERE id=?", (doc_id,))
             parsed.append({
-                "doc_id": doc_id,
-                "filename": url,
-                "content": content,
-                "page_count": 0,
-                "source_url": url,
+                "doc_id": doc_id, "filename": url,
+                "content": content, "md_path": md_path,
+                "page_count": 0, "source_url": url,
             })
             processed += 1
         else:
             errors += 1
             if doc_id:
-                conn.execute(
-                    "UPDATE documents SET status='error' WHERE id=?", (doc_id,)
-                )
+                conn.execute("UPDATE documents SET status='error' WHERE id=?", (doc_id,))
         conn.commit()
         update_batch_files(conn, job_id, processed, errors)
 
