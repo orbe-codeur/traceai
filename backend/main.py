@@ -911,7 +911,7 @@ def _run_pipeline(project_id: int, job_id: int, urls: list[str]):
     Pipeline synchrone (exécuté dans un thread par FastAPI BackgroundTasks).
     Enchaîne les 10 agents et met à jour batch_jobs en continu.
     """
-    from agents import arborescence, tri, parser, chunker
+    from agents import arborescence, tri, parser, classifier, chunker
     from agents import enrichisseur, indexeur, compilateur, qualite
     from agents import repondeur, alertes
 
@@ -933,6 +933,9 @@ def _run_pipeline(project_id: int, job_id: int, urls: list[str]):
 
         # Agent 3
         parsed_docs = parser.run(project_id, job_id, unique_files, conn, urls=urls)
+
+        # Agent 3.5 — Classification LLM (doc_type, machine_ref, manufacturer, model, language)
+        parsed_docs = classifier.run(project_id, job_id, parsed_docs, conn)
 
         # Agent 4
         chunks = chunker.run(project_id, job_id, parsed_docs, conn)

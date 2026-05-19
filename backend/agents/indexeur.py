@@ -54,15 +54,21 @@ def run(
     indexed = 0
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i : i + batch_size]
-        texts = [c["content"][:2000] for c in batch]
+        # Mistral Embed supporte 8192 tokens (~32 000 chars) — pas de troncature artificielle
+        texts = [c["content"][:30000] for c in batch]
         ids = [str(c["id"]) for c in batch]
         metadatas = [
             {
-                "doc_id": str(c.get("doc_id", "")),
-                "page": str(c.get("page_ref", "")),
-                "machine": c.get("machine_ref", "") or "",
-                "category": c.get("category", "") or "",
-                "filename": c.get("filename", "") or "",
+                "doc_id":       str(c.get("doc_id", "")),
+                "page":         str(c.get("page_ref", "") or ""),
+                "machine":      c.get("machine_ref", "") or "",
+                "doc_type":     c.get("doc_type", "") or "",
+                "manufacturer": c.get("manufacturer", "") or "",
+                "language":     c.get("language", "") or "",
+                "is_table":     str(c.get("is_table", False)),
+                "chunk_method": c.get("chunk_method", "") or "",
+                "section":      (c.get("section_ref", "") or "")[:200],
+                "filename":     c.get("filename", "") or "",
             }
             for c in batch
         ]
