@@ -1,0 +1,278 @@
+{
+  "version": "1.0",
+  "description": "Test set RAG — Jenny Compressor Manual (projet 1)",
+  "project_id": 1,
+  "questions": [
+
+    {
+      "id": "T01",
+      "type": "valeur_exacte",
+      "question": "Quel est le couple de serrage des boulons de culasse du compresseur Jenny ?",
+      "expected_keywords": ["6", "ft-lb", "8.1", "Nm"],
+      "expected_page": 48,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T02",
+      "type": "valeur_exacte",
+      "question": "Quelle est la pression de coupure de la soupape pilote ?",
+      "expected_keywords": ["125", "175", "psi"],
+      "expected_page": 41,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T03",
+      "type": "valeur_exacte",
+      "question": "Quel est le différentiel de pression de la soupape pilote ?",
+      "expected_keywords": ["20", "psi"],
+      "expected_page": 41,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T04",
+      "type": "valeur_exacte",
+      "question": "Quelle est la température maximale du compresseur avant arrêt obligatoire ?",
+      "expected_keywords": ["240", "115"],
+      "expected_page": 8,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T05",
+      "type": "valeur_exacte",
+      "question": "Quel dégagement de ventilation est requis autour du compresseur ?",
+      "expected_keywords": ["3", "0.9", "pied", "mètre"],
+      "expected_page": 8,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T06",
+      "type": "valeur_exacte",
+      "question": "À quelle fréquence faut-il purger le condensat du réservoir ?",
+      "expected_keywords": ["quotidien", "daily", "chaque jour"],
+      "expected_page": 29,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T07",
+      "type": "valeur_exacte",
+      "question": "À quelle fréquence faut-il vérifier la tension de la courroie d'entraînement ?",
+      "expected_keywords": ["50", "heure", "50h"],
+      "expected_page": 41,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T08",
+      "type": "valeur_exacte",
+      "question": "À quelle fréquence faut-il remplacer ou nettoyer le filtre à air ?",
+      "expected_keywords": ["100", "heure", "100h"],
+      "expected_page": 39,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T09",
+      "type": "valeur_exacte",
+      "question": "Quand faut-il faire la première vidange d'huile du compresseur ?",
+      "expected_keywords": ["20", "heure", "20h"],
+      "expected_page": 38,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T10",
+      "type": "valeur_exacte",
+      "question": "Quel type d'huile synthétique est recommandé pour le compresseur Jenny ?",
+      "expected_keywords": ["Jenny", "Ultimate", "Blue", "synthétique"],
+      "expected_page": 38,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T11",
+      "type": "procedure",
+      "question": "Quelles sont les étapes pour purger le condensat du réservoir d'air ?",
+      "expected_keywords": ["OFF", "drain", "valve", "10 psi", "robinet"],
+      "expected_page": 29,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T12",
+      "type": "procedure",
+      "question": "Comment ajuster le régulateur de pression ?",
+      "expected_keywords": ["bouton", "knob", "horaire", "clockwise", "pousser", "verrouiller"],
+      "expected_page": 28,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T13",
+      "type": "procedure",
+      "question": "Comment connecter un tuyau au compresseur ?",
+      "expected_keywords": ["0 PSI", "collar", "coupler", "connecteur", "tirer"],
+      "expected_page": 28,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T14",
+      "type": "procedure",
+      "question": "Comment vérifier le niveau d'huile du compresseur ?",
+      "expected_keywords": ["bouchon", "plug", "tournevis", "screwdriver", "crankcase", "carter"],
+      "expected_page": 38,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T15",
+      "type": "procedure",
+      "question": "Comment changer l'huile du compresseur Jenny ?",
+      "expected_keywords": ["drain", "vidange", "bouchon", "cap", "remplir", "fill"],
+      "expected_page": 38,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T16",
+      "type": "procedure",
+      "question": "Comment vérifier et tester la soupape de sécurité ?",
+      "expected_keywords": ["ring", "bague", "plunger", "piston", "tirer", "pull"],
+      "expected_page": 39,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T17",
+      "type": "procedure",
+      "question": "Comment nettoyer ou remplacer le filtre à air ?",
+      "expected_keywords": ["dévisser", "unscrew", "élément", "element", "souffler", "blow"],
+      "expected_page": 39,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T18",
+      "type": "procedure",
+      "question": "Comment changer la tension de la courroie d'entraînement ?",
+      "expected_keywords": ["screw", "vis", "clockwise", "horaire", "tension"],
+      "expected_page": 41,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T19",
+      "type": "procedure",
+      "question": "Comment ajuster la pression de coupure du pressostat pilote ?",
+      "expected_keywords": ["screw A", "vis A", "clockwise", "nut B", "ecrou B"],
+      "expected_page": 40,
+      "difficulty": "difficile"
+    },
+
+    {
+      "id": "T20",
+      "type": "procedure",
+      "question": "Comment changer la tension d'alimentation entre 115V et 230V ?",
+      "expected_keywords": ["dual voltage", "switch", "hitch pin", "115", "230"],
+      "expected_page": 29,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T21",
+      "type": "comprehension",
+      "question": "Quelles sont toutes les tâches de maintenance préventive quotidiennes ?",
+      "expected_keywords": ["purge", "condensat", "drain", "huile", "oil", "bruit", "noise"],
+      "expected_page": 43,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T22",
+      "type": "comprehension",
+      "question": "Quelles précautions électriques faut-il respecter pour l'installation ?",
+      "expected_keywords": ["circuit dédié", "dedicated", "mise à la terre", "ground", "fil", "wire"],
+      "expected_page": 5,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T23",
+      "type": "comprehension",
+      "question": "Quelles sont les causes possibles si le compresseur ne monte pas en pression ?",
+      "expected_keywords": ["fuite", "leak", "clapet", "valve", "filtre", "filter"],
+      "expected_page": 45,
+      "difficulty": "difficile"
+    },
+
+    {
+      "id": "T24",
+      "type": "comprehension",
+      "question": "Quelles sont les règles de sécurité pour ne pas abîmer les tuyaux et raccords ?",
+      "expected_keywords": ["inspecter", "inspect", "usé", "worn", "remplacer", "replace"],
+      "expected_page": 8,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T25",
+      "type": "comprehension",
+      "question": "Quelle est la durée de garantie du compresseur Jenny ?",
+      "expected_keywords": ["1 an", "one year", "garantie", "warranty"],
+      "expected_page": 44,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T26",
+      "type": "comprehension",
+      "question": "Pourquoi ne faut-il pas utiliser l'air comprimé pour respirer ?",
+      "expected_keywords": ["respirer", "breathing", "sécurité", "safety", "contamination"],
+      "expected_page": 7,
+      "difficulty": "facile"
+    },
+
+    {
+      "id": "T27",
+      "type": "comprehension",
+      "question": "Quelles sont les conditions à respecter dans les zones humides (humid areas) ?",
+      "expected_keywords": ["humid", "humide", "condensat", "sludge", "lubrifiant", "lubricant"],
+      "expected_page": 29,
+      "difficulty": "difficile"
+    },
+
+    {
+      "id": "T28",
+      "type": "comprehension",
+      "question": "Quelles informations faut-il avoir pour appeler le service après-vente Jenny ?",
+      "expected_keywords": ["modèle", "model number", "numéro de série", "serial"],
+      "expected_page": 44,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T29",
+      "type": "comprehension",
+      "question": "Quelle est la fréquence de maintenance annuelle recommandée ?",
+      "expected_keywords": ["annuel", "annual", "200", "heure", "courroie", "belt", "huile", "oil"],
+      "expected_page": 43,
+      "difficulty": "moyen"
+    },
+
+    {
+      "id": "T30",
+      "type": "comprehension",
+      "question": "Quelles sont les précautions à respecter avant toute intervention de maintenance ?",
+      "expected_keywords": ["OFF", "déconnecter", "disconnect", "refroidir", "cool", "pressure", "pression"],
+      "expected_page": 38,
+      "difficulty": "moyen"
+    }
+
+  ]
+}

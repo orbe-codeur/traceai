@@ -109,6 +109,42 @@ def _chunk_block(block: dict) -> list[dict]:
     return chunks
 
 
+def _chunks_from_docling_sections(sections: list[dict]) -> list[dict]:
+    """
+    Convertit les sections Docling en chunks.
+
+    Règles :
+    - Tableau → 1 chunk entier (jamais découpé)
+    - Section avec contenu court (< MAX_CHARS) → 1 chunk
+    - Section longue → découpage avec overlap sur frontières de paragraphes
+    """
+    blocks = []
+    for sec in sections:
+        content = sec.get("content", "").strip()
+        if not content:
+            continue
+
+        if sec.get("has_table"):
+            # Tableaux : chunk atomique, jamais découpé
+            blocks.append({
+                "title":    sec["title"],
+                "content":  content,
+                "page_ref": sec.get("page", 0),
+                "is_table": True,
+            })
+        else:
+            # Section texte : découper si trop grande
+            base = {
+                "title":    sec["title"],
+                "page_ref": sec.get("page", 0),
+                "is_table": False,
+            }
+            for chunk in _chunk_block({**base, "content": content}):
+                blocks.append(chunk)
+
+    return blocks
+
+
 def run(
     project_id: int,
     job_id: int,
@@ -117,6 +153,7 @@ def run(
 ) -> list[dict]:
     """
     Découpe tous les documents parsés en chunks.
+    Utilise les sections Docling si disponibles, sinon fallback regex.
     Insère en base (table chunks).
     Retourne la liste des chunks avec leurs IDs.
     """
@@ -127,8 +164,10 @@ def run(
     chunk_index = 0
 
     for doc in parsed_docs:
-        doc_id = doc["doc_id"]
-        content = doc["content"]
+        doc_id   = doc["doc_id"]
+        content  = doc["content"]
+        sections = doc.get("sections", [])   # sections Docling si disponibles
+
         if not content or not content.strip():
             continue
 
@@ -137,35 +176,45 @@ def run(
         )
         conn.commit()
 
-        blocks = _detect_sections(content)
+        # Choix de la stratégie de découpage
+        if sections:
+            blocks = _chunks_from_docling_sections(sections)
+            logger.info(f"[chunker] {doc.get('filename','')} — "
+                        f"Docling sections ({len(blocks)} blocs)")
+        else:
+            blocks = _detect_sections(content)
+            blocks = [c for b in blocks for c in _chunk_block(b)]
+            logger.info(f"[chunker] {doc.get('filename','')} — "
+                        f"fallback regex ({len(blocks)} blocs)")
+
         for block in blocks:
-            for chunk in _chunk_block(block):
-                cursor = conn.execute(
-                    """INSERT INTO chunks
-                       (document_id, project_id, chunk_index, content,
-                        page_ref, section_ref, machine_ref)
-                       VALUES (?, ?, ?, ?, ?, ?,
-                           (SELECT machine_ref FROM documents WHERE id=?))""",
-                    (
-                        doc_id,
-                        project_id,
-                        chunk_index,
-                        chunk["content"],
-                        chunk.get("page_ref"),
-                        chunk.get("title", "")[:255],
-                        doc_id,
-                    ),
-                )
-                all_chunks.append({
-                    "id": cursor.lastrowid,
-                    "doc_id": doc_id,
-                    "chunk_index": chunk_index,
-                    "content": chunk["content"],
-                    "page_ref": chunk.get("page_ref"),
-                    "section_ref": chunk.get("title", ""),
-                    "filename": doc.get("filename", ""),
-                })
-                chunk_index += 1
+            cursor = conn.execute(
+                """INSERT INTO chunks
+                   (document_id, project_id, chunk_index, content,
+                    page_ref, section_ref, machine_ref)
+                   VALUES (?, ?, ?, ?, ?, ?,
+                       (SELECT machine_ref FROM documents WHERE id=?))""",
+                (
+                    doc_id,
+                    project_id,
+                    chunk_index,
+                    block["content"],
+                    block.get("page_ref"),
+                    block.get("title", "")[:255],
+                    doc_id,
+                ),
+            )
+            all_chunks.append({
+                "id":         cursor.lastrowid,
+                "doc_id":     doc_id,
+                "chunk_index": chunk_index,
+                "content":    block["content"],
+                "page_ref":   block.get("page_ref"),
+                "section_ref": block.get("title", ""),
+                "filename":   doc.get("filename", ""),
+                "is_table":   block.get("is_table", False),
+            })
+            chunk_index += 1
 
         conn.execute(
             "UPDATE documents SET status='chunked' WHERE id=?", (doc_id,)

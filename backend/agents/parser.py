@@ -21,13 +21,91 @@ SCAN_THRESHOLD = 100
 IMAGE_RATIO_THRESHOLD = 0.5
 
 
-def _parse_pdf(path: Path, project_id: int, doc_id: int, conn: sqlite3.Connection) -> str:
-    """Extrait le texte d'un PDF. Bascule sur OCR si scanné."""
+def _parse_pdf_docling(path: Path) -> tuple[str, list[dict]]:
+    """
+    Parse un PDF avec Docling — préserve sections, tableaux, hiérarchie.
+    Retourne (texte_markdown, sections_structurées).
+    sections = [{title, content, level, page, has_table, table_md}]
+    """
+    from docling.document_converter import DocumentConverter
+    from docling.datamodel.base_models import InputFormat
+    from docling.datamodel.pipeline_options import PdfPipelineOptions
+
+    options = PdfPipelineOptions()
+    options.do_ocr = False          # OCR activé séparément si besoin
+    options.do_table_structure = True
+    options.table_structure_options.do_cell_matching = True
+
+    converter = DocumentConverter()
+    result = converter.convert(str(path))
+    doc = result.document
+
+    sections = []
+    # Itérer les éléments du document dans l'ordre
+    for item, level in doc.iterate_items():
+        from docling_core.types.doc import SectionHeaderItem, TextItem, TableItem
+
+        if isinstance(item, SectionHeaderItem):
+            sections.append({
+                "title":     item.text,
+                "content":   "",
+                "level":     item.level,
+                "page":      item.prov[0].page_no if item.prov else 0,
+                "has_table": False,
+                "table_md":  None,
+            })
+        elif isinstance(item, TableItem):
+            table_md = item.export_to_markdown(doc)
+            entry = {
+                "title":     f"Tableau — {sections[-1]['title'] if sections else 'Table'}",
+                "content":   table_md,
+                "level":     (sections[-1]["level"] + 1) if sections else 3,
+                "page":      item.prov[0].page_no if item.prov else 0,
+                "has_table": True,
+                "table_md":  table_md,
+            }
+            sections.append(entry)
+        elif isinstance(item, TextItem) and item.text.strip():
+            if sections:
+                sections[-1]["content"] += "\n" + item.text
+            else:
+                sections.append({
+                    "title":     "",
+                    "content":   item.text,
+                    "level":     1,
+                    "page":      item.prov[0].page_no if item.prov else 0,
+                    "has_table": False,
+                    "table_md":  None,
+                })
+
+    # Texte markdown complet (fallback chunker)
+    full_md = doc.export_to_markdown()
+    return full_md, sections
+
+
+def _parse_pdf(path: Path, project_id: int, doc_id: int,
+               conn: sqlite3.Connection) -> tuple[str, list[dict]]:
+    """
+    Parse un PDF. Essaie Docling d'abord (structure), fallback PyMuPDF.
+    Retourne (texte, sections_structurées).
+    sections vides = le chunker utilisera le fallback regex.
+    """
+    # Tentative Docling
+    try:
+        text_md, sections = _parse_pdf_docling(path)
+        if text_md and len(text_md) > 200:
+            logger.info(f"[parser] {path.name} — Docling OK "
+                        f"({len(sections)} sections)")
+            return text_md, sections
+    except Exception as e:
+        logger.warning(f"[parser] Docling échoué sur {path.name}: {e} — fallback PyMuPDF")
+
+    # Fallback PyMuPDF
     try:
         doc = fitz.open(str(path))
     except Exception as e:
         logger.error(f"[parser] Impossible d'ouvrir {path.name}: {e}")
-        return ""
+        return "", []
 
     parts = []
     total_chars = 0
@@ -41,17 +119,14 @@ def _parse_pdf(path: Path, project_id: int, doc_id: int, conn: sqlite3.Connectio
     avg_chars = total_chars / max(total_pages, 1)
 
     if avg_chars < SCAN_THRESHOLD:
-        # PDF scanné : tenter Surya OCR, puis Tesseract, puis skip
         logger.info(f"[parser] {path.name} scanné (avg {avg_chars:.0f} chars/p) → OCR")
-        conn.execute(
-            "UPDATE documents SET is_scanned=1 WHERE id=?", (doc_id,)
-        )
+        conn.execute("UPDATE documents SET is_scanned=1 WHERE id=?", (doc_id,))
         conn.commit()
         ocr_text = _ocr_pdf(path, doc)
         if ocr_text:
-            return ocr_text
+            return ocr_text, []
 
-    return "\n\n".join(parts)
+    return "\n\n".join(parts), []
 
 
 def _ocr_pdf(path: Path, doc: fitz.Document) -> str:
@@ -205,8 +280,9 @@ def run(
         doc_id = row[0] if row else None
 
         try:
+            sections = []
             if ext == ".pdf":
-                content = _parse_pdf(path, project_id, doc_id, conn)
+                content, sections = _parse_pdf(path, project_id, doc_id, conn)
                 try:
                     doc = fitz.open(str(path))
                     page_count = len(doc)
@@ -247,9 +323,10 @@ def run(
                     content = content[:MAX_CHARS_PER_DOC]
 
                 parsed.append({
-                    "doc_id": doc_id,
-                    "filename": path.name,
-                    "content": content,
+                    "doc_id":    doc_id,
+                    "filename":  path.name,
+                    "content":   content,
+                    "sections":  sections,   # [] si PyMuPDF fallback
                     "page_count": page_count,
                     "source_url": None,
                 })
